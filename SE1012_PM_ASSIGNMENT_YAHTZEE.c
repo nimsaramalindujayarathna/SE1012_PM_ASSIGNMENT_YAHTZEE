@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <time.h>
 
+void instruct();
 int random_number();
 void dice_readings(int *dice);
 void printDice(int *diceArray);
@@ -38,11 +39,13 @@ int fourOfaKind(int *dices);
 int threeOfaKind(int *dices);
 void scoreTypeSelect(int *diceArray, int *nscore, int *oScore);
 void combinationSelected(int *diceArray, int combination, int *sum);
+void clearInputBuffer();
 
 
 int main(){
     srand(time(0)); // only call once. this will generate random numbers compared to the time in seconds. this will remove the squential random number ger=neration.
     
+    instruct();
     int finalDiceReading[5]; // variable to store dice 5 readings
     int basicNumbersScoreSum = 0;
     int numbersScore= 0;
@@ -60,6 +63,30 @@ int main(){
     }
     finalScore = numbersScore + otherScore + bonusForNumbers;
     printf("Final Score : %d\n", finalScore);
+}
+
+//instruction function
+void instruct(){
+    char charInput;
+    printf("This game is played over 13 rounds, and in each round, players can roll the dice up to three times.\nAfter each roll, they can choose to keep or re-roll any number of dice in an attempt to achieve a higher score in one of 13 scoring categories.\n");
+    printf("Player can go to next round after the computer player rolled the dices for the current round.\n");
+    printf("Do you want more information of the Scoring Dice Combinations. Yes - 'Y'   No - 'N' : ");
+    scanf(" %c",&charInput);
+    //Input Validation
+    while (!(charInput == 'Y' || charInput == 'y' || charInput == 'N' || charInput == 'n')) {
+        printf("Invalid char input press either 'Y' or 'N'. Simple letters also works : ");
+        scanf(" %c",&charInput);
+    }
+    if (charInput == 'Y' || charInput == 'y'){
+        printf("/n1 to 6:           Score based on the sum of the dice that show the chosen number.\n");
+        printf("Three of a Kind:  Score the sum of all dice if at least three of them are the same.\n");
+        printf("Four of a Kind:   Score the sum of all dice if at least four of them are the same.\n");
+        printf("Full House:       Score 25 points for a combination of three of one number and two of another.\n");
+        printf("Small Straight:   Score 30 points for four consecutive numbers.\n");
+        printf("Large Straight:   Score 40 points for five consecutive numbers.\n");
+        printf("Yahtzee:          Score 50 points for five dice showing the same number.\n");
+        printf("Chance:           Score the sum of all dice, regardless of combination.\n");
+    }
 }
 
 
@@ -219,9 +246,9 @@ int smallStraight(int *dices) {
     for (int i = 0; i < 5; i++) {
         array1[dices[i] - 1]++ ;
     }
-    if((array1[0] == 1 && array1[1] == 1 && array1[2] == 1 && array1[3] == 1) ||
-       (array1[1] == 1 && array1[2] == 1 && array1[3] == 1 && array1[4] == 1) ||
-       (array1[2] == 1 && array1[3] == 1 && array1[4] == 1 && array1[5] == 1)) {
+    if((array1[0] >= 1 && array1[1] >= 1 && array1[2] >= 1 && array1[3] >= 1) ||
+       (array1[1] >= 1 && array1[2] >= 1 && array1[3] >= 1 && array1[4] >= 1) ||
+       (array1[2] >= 1 && array1[3] >= 1 && array1[4] >= 1 && array1[5] >= 1)) {
         return 30;
     } else {
         return 0;
@@ -266,7 +293,7 @@ int fourOfaKind(int *dices){
         array1[dices[ii] - 1]++ ;
     }
     for (int j = 0; j < 6; j++) {
-        if (array1[j] == 4){
+        if (array1[j] <= 4){
             return sum;
         }
     }
@@ -284,7 +311,7 @@ int threeOfaKind(int *dices){
         array1[dices[ii] - 1]++ ;
     }
     for (int j = 0; j < 6; j++) {
-        if (array1[j] == 3){
+        if (array1[j] <= 3){
             return sum;
         }
     }
@@ -323,17 +350,19 @@ void scoreTypeSelect(int *diceArray, int *nScore, int *oScore){
         }
         diceRoll(diceArray);
         //input validation for indexI variable
-        while (1){
+        while (1) {
             printf("Choose an available combination no (1 to 13): ");
-            scanf("%d",&indexI);
-            if (array1[indexI - 1] == 1) {  
-                printf("This combination has already been chosen! Please pick another.\n");
-                continue;
-            } else if (indexI < 1 || indexI > 13){
+            if (scanf("%d", &indexI) != 1) {  //check if the input is integer
                 printf("Invalid input! Please enter a number between 1 and 13.\n");
+                clearInputBuffer();  // Clear buffer if input is not a integer
                 continue;
+            }
+            if (indexI < 1 || indexI > 13) { //for out of ranges inouts
+                printf("Invalid input value. Please enter a number between 1 and 13.\n");
+            } else if (array1[indexI - 1] == 1) { // for prevoiously inutted value check
+                printf("This combination has already been chosen! Please pick another.\n");
             } else {
-                break;
+                break;  // if the inout is valid loop break
             }
         }
         combinationSelected(diceArray, indexI, &tempscore);
@@ -375,4 +404,8 @@ void combinationSelected(int *diceArray, int combination, int *sum){
     *sum = score;
 }
 
-
+// this obtained from chat gpt has to look
+void clearInputBuffer() {
+    int ch;
+    while ((ch = getchar()) != '\n' && ch != EOF);  // Discard invalid input and clear buffer
+}
