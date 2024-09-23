@@ -4,8 +4,8 @@
     Program: Yahtzee Game
 
     Description:
-    This program simulates a game of Yahtzee, a popular dice game. The game involves rolling 
-    five dice up to three times in a turn, aiming to score points by creating specific dice 
+    This program simulates a game of Yahtzee, a popular dice game. The game involves rolling
+    five dice up to three times in a turn, aiming to score points by creating specific dice
     combinations (e.g., three of a kind, four of a kind, full house, etc.).
 
     Key Features of the Program:
@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <time.h>
 
+//void instruct();
 int random_number();
 void dice_readings(int *dice);
 void printDice(int *diceArray);
@@ -41,8 +42,8 @@ void combinationSelected(int *diceArray, int combination, int *sum);
 
 
 int main(){
-    srand(time(0)); // only call once. this will generate random numbers compared to the time in seconds. this will remove the squential random number ger=neration.
-    
+    srand(time(0)); // only call once. this will generate random numbers compared to the time in seconds. this will remove the squential random number gereneration.
+
     int finalDiceReading[5]; // variable to store dice 5 readings
     int basicNumbersScoreSum = 0;
     int numbersScore= 0;
@@ -51,7 +52,8 @@ int main(){
     int checkNumber[] = {0, 0, 0, 0, 0, 0} ;
     int specialDice =0;
     int bonusForNumbers = 0;
-    
+
+    instruct();
     scoreTypeSelect(finalDiceReading, &numbersScore, &otherScore);
     printf("Number Score : %d\n", numbersScore);
     printf("Other Score :%d\n", otherScore);
@@ -63,10 +65,34 @@ int main(){
 }
 
 
+//instruction function
+void instruct(){
+    char charInput;
+    printf("This game is played over 13 rounds, and in each round, players can roll the dice up to three times.\nAfter each roll, they can choose to keep or re-roll any number of dice in an attempt to achieve a higher score in one of 13 scoring categories.\n");
+    printf("Player can go to next round after the computer player rolled the dices for the current round.\n");
+    printf("Do you want more information of the Scoring Dice Combinations. Yes - 'Y'   No - 'N' : ");
+    scanf(" %c",&charInput);
+    //Input Validation
+    while (!(charInput == 'Y' || charInput == 'y' || charInput == 'N' || charInput == 'n')) {
+        printf("Invalid char input press either 'Y' or 'N'. Simple letters also works : ");
+        scanf(" %c",&charInput);
+    }
+    if (charInput == 'Y' || charInput == 'y'){
+        printf("1 to 6:           Score based on the sum of the dice that show the chosen number.\n");
+        printf("Three of a Kind:  Score the sum of all dice if at least three of them are the same.\n");
+        printf("Four of a Kind:   Score the sum of all dice if at least four of them are the same.\n");
+        printf("Full House:       Score 25 points for a combination of three of one number and two of another.\n");
+        printf("Small Straight:   Score 30 points for four consecutive numbers.\n");
+        printf("Large Straight:   Score 40 points for five consecutive numbers.\n");
+        printf("Yahtzee:          Score 50 points for five dice showing the same number.\n");
+        printf("Chance:           Score the sum of all dice, regardless of combination.\n");
+    }
+}
+
 // this function will generate random numbers from 1-6 getting the dice readings
 int random_number(){
     return (rand() % 6) + 1;
-} 
+}
 
 
 // this fuction will print the dice readings when the readings array is passed as an parameter
@@ -92,8 +118,9 @@ void diceRoll(int *mainArray) {
     int indexes; //indexs to keep
     int NoOfIndexes; // no of the indexes to keep
     int I; // varible used to print the rolll NO
-    char inputChar; 
-    printf("\nInital Dice Readings : ");
+    char inputChar;
+    printf("\nInital Dice Readings\n");
+    printf("Roll NO 1 :");
     dice_readings(mainArray); //Inital dice roll
     printDice(mainArray); //Inital deice reads displayed
     for (int i = 0; i < 2; i++) {
@@ -109,7 +136,7 @@ void diceRoll(int *mainArray) {
                 tempArray[j] = mainArray[j]; //store the main array data to temp array to roll the dices again, while the values in the temp arrary are used to do the execution
             }
             dice_readings(mainArray); // next dice rolls. actually the programm roll the dice and store it in a array before asking the user what to do with the previous dice readings.
-            printf("Enter how many dice readings you want to keep : "); 
+            printf("Enter how many dice readings you want to keep : ");
             scanf("%d",&NoOfIndexes);
             //input validation ---- NoofIndexes
             while(!((NoOfIndexes >= 0) && (NoOfIndexes < 5))){
@@ -127,11 +154,11 @@ void diceRoll(int *mainArray) {
                 mainArray[indexes] = tempArray[indexes]; // the main array store the next roll data and occording to the indexes the values decided keep are assigned into the newly rolled main array
             }
             I = i + 2;
-            printf("Roll NO : %d\n",I); // this selection print the roll no
+            printf("Roll NO %d : ",I); // this selection print the roll no
             printDice(mainArray); // print the new dices rolls
         } else if (inputChar == 'N' || inputChar == 'n') {
             return; // if the user do not want to roll again escape the function
-        } 
+        }
     }
     printf("Final Dice Readings are : ");
     printDice(mainArray); // after 3 dice rools or users's prefered dice rolls print  the dices
@@ -219,9 +246,9 @@ int smallStraight(int *dices) {
     for (int i = 0; i < 5; i++) {
         array1[dices[i] - 1]++ ;
     }
-    if((array1[0] == 1 && array1[1] == 1 && array1[2] == 1 && array1[3] == 1) ||
-       (array1[1] == 1 && array1[2] == 1 && array1[3] == 1 && array1[4] == 1) ||
-       (array1[2] == 1 && array1[3] == 1 && array1[4] == 1 && array1[5] == 1)) {
+    if((array1[0] >= 1 && array1[1] >= 1 && array1[2] >= 1 && array1[3] >= 1) ||
+       (array1[1] >= 1 && array1[2] >= 1 && array1[3] >= 1 && array1[4] >= 1) ||
+       (array1[2] >= 1 && array1[3] >= 1 && array1[4] >= 1 && array1[5] >= 1)) {
         return 30;
     } else {
         return 0;
@@ -245,7 +272,7 @@ int fullHouse(int *dices){
     for (int k = 0; k < 6; k++){
         if (array1[k] == 2){
             kindOfTwoCheck = 1;
-        } 
+        }
     }
     if((kindOfThreeCheck == 1) && (kindOfTwoCheck == 1)) {
         sum = 25;
@@ -266,7 +293,7 @@ int fourOfaKind(int *dices){
         array1[dices[ii] - 1]++ ;
     }
     for (int j = 0; j < 6; j++) {
-        if (array1[j] == 4){
+        if (array1[j] <= 4){
             return sum;
         }
     }
@@ -284,7 +311,7 @@ int threeOfaKind(int *dices){
         array1[dices[ii] - 1]++ ;
     }
     for (int j = 0; j < 6; j++) {
-        if (array1[j] == 3){
+        if (array1[j] <= 3){
             return sum;
         }
     }
@@ -314,7 +341,7 @@ void scoreTypeSelect(int *diceArray, int *nScore, int *oScore){
     snprintf(chars[11], 20, "Chance");
     snprintf(chars[12], 20, "YAHTZEE");
     for (int i = 0; i < 13; i++) {
-        printf("\n\nRoll No %d                                          UPPER SECTION = %d  LOWER SECTION = %d\n",i + 1,nnScore,ooScore);
+        printf("\n\n                    Round No %d        UPPER SECTION = %d  LOWER SECTION = %d\n",i + 1,nnScore,ooScore);
         printf("\nCombinations Available to Choose.\n");
         for (int ii = 0; ii < 13; ii++) { // this prints the currently available combinations for user to choose from.
             if (array1[ii] == 0){
@@ -326,7 +353,7 @@ void scoreTypeSelect(int *diceArray, int *nScore, int *oScore){
         while (1){
             printf("Choose an available combination no (1 to 13): ");
             scanf("%d",&indexI);
-            if (array1[indexI - 1] == 1) {  
+            if (array1[indexI - 1] == 1) {
                 printf("This combination has already been chosen! Please pick another.\n");
                 continue;
             } else if (indexI < 1 || indexI > 13){
