@@ -36,7 +36,7 @@ int smallStraight(int *dices);
 int fullHouse(int *dices);
 int fourOfaKind(int *dices);
 int threeOfaKind(int *dices);
-void scoreTypeSelect(int *diceArray, int *finalscore, int *nscore, int *oScore);
+void scoreTypeSelect(int *diceArray, int *nscore, int *oScore);
 void combinationSelected(int *diceArray, int combination, int *sum);
 
 
@@ -52,7 +52,7 @@ int main(){
     int specialDice =0;
     int bonusForNumbers = 0;
     
-    scoreTypeSelect(finalDiceReading, &numbersScore, &numbersScore, &otherScore);
+    scoreTypeSelect(finalDiceReading, &numbersScore, &otherScore);
     printf("Number Score : %d\n", numbersScore);
     printf("Other Score :%d\n", otherScore);
     if (numbersScore > 62){
@@ -292,7 +292,7 @@ int threeOfaKind(int *dices){
 }
 
 //this function will promt the user to choose which combination that the user is willing to use for current dice readings
-void scoreTypeSelect(int *diceArray, int *finalscore, int *nScore, int *oScore){
+void scoreTypeSelect(int *diceArray, int *nScore, int *oScore){
     int array1[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     char chars[13][20];
     int indexI;
@@ -314,9 +314,6 @@ void scoreTypeSelect(int *diceArray, int *finalscore, int *nScore, int *oScore){
     snprintf(chars[11], 20, "Chance");
     snprintf(chars[12], 20, "YAHTZEE");
     for (int i = 0; i < 13; i++) {
-        /*if (i == 12) { // this will stop the for loop from running(to stop running the below conditions over and over again) when 13 combinations were inputted
-            break;
-        }*/
         printf("\n\nRoll No %d                                          UPPER SECTION = %d  LOWER SECTION = %d\n",i + 1,nnScore,ooScore);
         printf("\nCombinations Available to Choose.\n");
         for (int ii = 0; ii < 13; ii++) { // this prints the currently available combinations for user to choose from.
