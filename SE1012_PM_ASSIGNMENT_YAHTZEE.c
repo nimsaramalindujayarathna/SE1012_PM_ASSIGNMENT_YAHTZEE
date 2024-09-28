@@ -42,14 +42,21 @@ void clearInputBuffer();
 
 int main() {
     srand(time(0));// only call once. this will generate random numbers compared to the time in seconds. this will remove the squential random number ger=neration.
-    
+
     //variable Declaration
-    char dices[5];
+    char dices[5]; //dice readings
     //int finalDiceReading[5]; // variable to store dice 5 readings
+    //user scores
     int basicNumbersScoreSum = 0;
     int numbersScore= 0;
     int otherScore = 0;
     int finalScore = 0;
+    //AI scores
+    int AINumbersScoreSum = 0;
+    int AInumbersScore= 0;
+    int AIotherScore = 0;
+    int AIfinalScore = 0;
+    //othere variables
     int checkNumber[] = {0, 0, 0, 0, 0, 0} ;
     int specialDice =0;
     int bonusForNumbers = 35;
