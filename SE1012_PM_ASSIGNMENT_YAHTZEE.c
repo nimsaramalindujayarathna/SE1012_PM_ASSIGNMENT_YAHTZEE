@@ -26,8 +26,10 @@
 void instruct();
 int random_number();
 void dice_readings(char *dices);
-void printDice(char *dices);
 void diceRoll(char *dices);
+void printDice(char *dices);
+
+//combinations fucntions
 int chance(char * dices);
 int yahtzee(char *dices);
 int largeStraight(char *dices);
@@ -35,25 +37,26 @@ int smallStraight(char *dices);
 int fullHouse(char *dices);
 int fourOfaKind(char *dices);
 int threeOfaKind(char *dices);
+
+//get input to choose which combination to choose
+void userIndex(char *dices, int *combinationArray, int *combinationIndexNumber);
+
+///output display fucntions
 int bonus(int numbersScore);
 void scoreDisplay(char *type, int nScore, int oScore, int *total);
 void winner(int userFinal, int AIFinal);
-//void scoreTypeSelect(char *dices, int *nScore, int *oScore, int *AInScore, int * AIoScore, char *AIdices);
-//void userIndex(char *dices, int *combinations, int *combinationNum);
-void userIndex(char *dices, int *combinationArray, int *combinationIndexNumber);
-void combinationSelected(char *dices, int *combination, int *score);
+void scoreForCombination(char *dices, int *combination, int *score);
+void AIscoreForCombination(char *dices, int combinationNum, int *score);
 void clearInputBuffer();
-void runningFun(char *dices,int *combinationArray,int combinationIndexNumber,int *combinationIndexNumberPointer, int *nScore, int *oScore, char *AIdices, int *AInScore, int *AIoScore);
-void AIcombinationSelected(char *dices, int combinationNum, int *score);
 
+//final main function
+void runningFun(char *dices,int *combinationArray,int combinationIndexNumber,int *combinationIndexNumberPointer, int *nScore, int *oScore, char *AIdices, int *AInScore, int *AIoScore);
 
 
 int main() {
     srand(time(0));// only call once. this will generate random numbers compared to the time in seconds. this will remove the squential random number ger=neration.
 
     //variable Declaration
-
-    //int finalDiceReading[5]; // variable to store dice 5 readings
 
     //user scores
     char dices[5]; //dice readings
@@ -97,6 +100,8 @@ int main() {
     return 0;
 }
 
+
+
 //Displaying the Score
 void scoreDisplay(char *type, int nScore, int oScore, int *total) {
     int tot;
@@ -109,7 +114,6 @@ void scoreDisplay(char *type, int nScore, int oScore, int *total) {
     *total = tot;
 }
 
-
 //Choosing the winner
 void winner(int userFinal, int AIFinal) {
     if(userFinal < AIFinal){
@@ -121,7 +125,6 @@ void winner(int userFinal, int AIFinal) {
     }
     printf("\n\n");
 }
-
 
 //bonus score
 int bonus(int numbersScore){
@@ -156,11 +159,11 @@ void instruct(){
 }
 
 
+
 // this function will generate random numbers from 1-6 getting the dice readings
 int random_number(){
     return (rand() % 6) + 1;
 } 
-
 
 // this fuction will print the dice readings when the readings array is passed as an parameter
 void dice_readings(char *dices) {
@@ -169,7 +172,6 @@ void dice_readings(char *dices) {
     }
 }
 
-
 // this function will generate 5 dice readings and store them in an array and the array name will be passed as an parameter
 void printDice(char *dices){
     for (int i = 0; i < 5; i++){
@@ -177,7 +179,6 @@ void printDice(char *dices){
     }
     printf("\n");
 }
-
 
 // this function will roll the dice 3 times and get the readings according to the user's preference and the array wich use to store the readings are pass as parameters
 void diceRoll(char *dices) {
@@ -232,6 +233,7 @@ void diceRoll(char *dices) {
 }
 
 
+
 //chance function
 int chance(char * dices){
     int sum = 0;
@@ -240,7 +242,6 @@ int chance(char * dices){
     }
     return sum;
 }
-
 
 //yahtzee function
 int yahtzee(char *dices){
@@ -254,7 +255,6 @@ int yahtzee(char *dices){
     }
     return sum;
 }
-
 
 //large straight function
 int largeStraight(char *dices) {
@@ -270,7 +270,6 @@ int largeStraight(char *dices) {
     }
 }
 
-
 //small straight function
 int smallStraight(char *dices) {
     int array[] = {0, 0, 0, 0, 0, 0};
@@ -285,7 +284,6 @@ int smallStraight(char *dices) {
         return 0;
     }
 }
-
 
 //full house function
 int fullHouse(char *dices){
@@ -314,7 +312,6 @@ int fullHouse(char *dices){
     return sum;
 }
 
-
 //four of a kind function
 int fourOfaKind(char *dices){
     int sum = 0;
@@ -333,7 +330,6 @@ int fourOfaKind(char *dices){
     return 0;
 }
 
-
 //three of a kind function
 int threeOfaKind(char *dices){
     int sum = 0;
@@ -350,172 +346,11 @@ int threeOfaKind(char *dices){
         }
     }
     return 0;
-    // int sum = 0;
-    // int array1[] = {0, 0, 0, 0, 0, 0};
-    // for (int i = 0; i < 5;i++){
-    //     sum = sum + dices[i];
-    // }
-    // for (int ii = 0; ii < 5; ii++) {
-    //     array1[dices[ii] - 1]++ ;
-    // }
-    // for (int j = 0; j < 6; j++) {
-    //     if (array1[j] <= 3){
-    //         return sum;
-    //     }
-    // }
-    // return 0;
 }
 
 
-// this function choose which combination fucntions to run and return the score for the respective combinations.
-void combinationSelected(char *dices, int *combinationNum, int *score){
-    int tempscore = 0;
-    int combination = *combinationNum;
-    if (combination < 7){
-        for (int i = 0; i < 5; i++) {
-            if (dices[i] == combination) {
-                tempscore = tempscore + dices[i];
-            }
-        }
-    }
-    else if(combination == 7) {
-        tempscore = threeOfaKind(dices);
-    } else if(combination == 8) {
-        tempscore = fourOfaKind(dices);
-    } else if(combination == 9) {
-        tempscore = fullHouse(dices);
-    } else if(combination == 10) {
-        tempscore = smallStraight(dices);
-    } else if(combination == 11) {
-        tempscore = largeStraight(dices);
-    } else if(combination == 12) {
-        tempscore = chance(dices);
-    } else if(combination == 13) {
-        tempscore = yahtzee(dices);
-    }
-    *score = tempscore;
-    printf("Score for this round = %d\n",tempscore);
-}
 
-
-//AI implication
-void AIcombinationSelected(char *dices, int combinationNum, int *score){
-    int tempscore = 0;
-    if (combinationNum < 7){
-        for (int i = 0; i < 5; i++) {
-            if (dices[i] == combinationNum) {
-                tempscore = tempscore + dices[i];
-            }
-        }
-    }
-    else if(combinationNum == 7) {
-        tempscore = threeOfaKind(dices);
-    } else if(combinationNum == 8) {
-        tempscore = fourOfaKind(dices);
-    } else if(combinationNum == 9) {
-        tempscore = fullHouse(dices);
-    } else if(combinationNum == 10) {
-        tempscore = smallStraight(dices);
-    } else if(combinationNum == 11) {
-        tempscore = largeStraight(dices);
-    } else if(combinationNum == 12) {
-        tempscore = chance(dices);
-    } else if(combinationNum == 13) {
-        tempscore = yahtzee(dices);
-    }
-    *score = tempscore;
-    printf("Score for this round = %d\n\n",tempscore);
-}
-
-
-// this obtained from chat gpt has to look
-void clearInputBuffer() {
-    int ch;
-    while ((ch = getchar()) != '\n' && ch != EOF);  // Discard invalid input and clear buffer
-}
-
-//this function will promt the user to choose which combination that the user is willing to use for current dice readings
-/*
-void scoreTypeSelect(char *dices, int *nScore, int *oScore, int *AInScore, int * AIoScore, char *AIdices){
-    int array1[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-    char chars[13][20];
-    int indexI;
-    int checknumb = 0;
-    int tempscore = 0;
-    int AItempscore = 0;
-    int nnScore= 0;
-    int ooScore = 0;
-    int nnnScore= 0;
-    int oooScore = 0;
-    snprintf(chars[0], 20, "Ones");
-    snprintf(chars[1], 20, "Twos");
-    snprintf(chars[2], 20, "Threes");
-    snprintf(chars[3], 20, "Fours");
-    snprintf(chars[4], 20, "Fives");
-    snprintf(chars[5], 20, "Sixes");
-    snprintf(chars[6], 20, "Three of a Kind");
-    snprintf(chars[7], 20, "Fours of a Kind");
-    snprintf(chars[8], 20, "Full House");
-    snprintf(chars[9], 20, "Small Straight");
-    snprintf(chars[10], 20, "Large Straight");
-    snprintf(chars[11], 20, "Chance");
-    snprintf(chars[12], 20, "YAHTZEE");
-    for (int i = 0; i < 13; i++) {
-        printf("\n\nRound No %d\n",i+1);                    
-        printf("        YOUR MARKS     UPPER SECTION = %d  LOWER SECTION = %d   TOTAL SCORE = %d\n",nnScore, ooScore, nnScore + ooScore);
-        printf("        AI MARKS       UPPER SECTION = %d  LOWER SECTION = %d   TOTAL SCORE = %d\n",nnnScore, oooScore, nnnScore + oooScore);
-        printf("\nCombinations Available to Choose.\n");
-        for (int ii = 0; ii < 13; ii++) { // this prints the currently available combinations for user to choose from.
-            if (array1[ii] == 0){
-                printf("    %d. %s\n",(ii+1),chars[ii]);
-            }
-        }
-        diceRoll(dices);
-        //input validation for indexI variable
-        while (1) {
-            printf("Choose an available combination no (1 to 13): ");
-            if (scanf("%d", &indexI) != 1) {  //check if the input is integer
-                printf("Invalid input! Please enter a number between 1 and 13.\n");
-                clearInputBuffer();  // Clear buffer if input is not a integer
-                continue;
-            }
-            if (indexI < 1 || indexI > 13) { //for out of ranges inouts
-                printf("Invalid input value. Please enter a number between 1 and 13.\n");
-            } else if (array1[indexI - 1] == 1) { // for prevoiously inutted value check
-                printf("This combination has already been chosen! Please pick another.\n");
-            } else {
-                break;  // if the input is valid loop break
-            }
-        }
-        combinationSelected(dices, indexI, &tempscore);
-        if (indexI < 7) {
-            nnScore = nnScore + tempscore;
-        } else {
-            ooScore = ooScore + tempscore;
-        }
-        
-        dice_readings(AIdices);
-        combinationSelected(AIdices,i+1,&AItempscore);
-        printf("\nAi Dice Readings are : ");
-        printDice(AIdices);
-        printf("Combination Type : %s\n", chars[i+1]);
-        if (i+1 < 7) {
-            nnnScore = nnnScore + AItempscore;
-        } else {
-            oooScore = oooScore + AItempscore;
-        }
-    }
-    *nScore = nnScore;
-    *oScore = ooScore;
-    *AInScore = nnnScore;
-    *AIoScore = oooScore;
-}
-*/
-
-
-
-
-//define the user's combination for each dice rounds
+//this function is used to get the user's combination for each dice rounds
 void userIndex(char *dices, int *combinationArray, int *combinationIndexNumber){
     int index;
     char chars[13][20];
@@ -560,9 +395,63 @@ void userIndex(char *dices, int *combinationArray, int *combinationIndexNumber){
     *combinationIndexNumber = index;
 }
 
-//define the respective AI's combination for each round respective to the user's
-void AIIndex() {
+// this function will produce the score when the combination type is inputted
+void scoreForCombination(char *dices, int *combinationNum, int *score){
+    int tempscore = 0;
+    int combination = *combinationNum;
+    if (combination < 7){
+        for (int i = 0; i < 5; i++) {
+            if (dices[i] == combination) {
+                tempscore = tempscore + dices[i];
+            }
+        }
+    }
+    else if(combination == 7) {
+        tempscore = threeOfaKind(dices);
+    } else if(combination == 8) {
+        tempscore = fourOfaKind(dices);
+    } else if(combination == 9) {
+        tempscore = fullHouse(dices);
+    } else if(combination == 10) {
+        tempscore = smallStraight(dices);
+    } else if(combination == 11) {
+        tempscore = largeStraight(dices);
+    } else if(combination == 12) {
+        tempscore = chance(dices);
+    } else if(combination == 13) {
+        tempscore = yahtzee(dices);
+    }
+    *score = tempscore;
+    printf("Score for this round = %d\n",tempscore);
+}
 
+/// this function will produce the score when the combination type is inputted - for the AI
+void AIscoreForCombination(char *dices, int combinationNum, int *score){
+    int tempscore = 0;
+    if (combinationNum < 7){
+        for (int i = 0; i < 5; i++) {
+            if (dices[i] == combinationNum) {
+                tempscore = tempscore + dices[i];
+            }
+        }
+    }
+    else if(combinationNum == 7) {
+        tempscore = threeOfaKind(dices);
+    } else if(combinationNum == 8) {
+        tempscore = fourOfaKind(dices);
+    } else if(combinationNum == 9) {
+        tempscore = fullHouse(dices);
+    } else if(combinationNum == 10) {
+        tempscore = smallStraight(dices);
+    } else if(combinationNum == 11) {
+        tempscore = largeStraight(dices);
+    } else if(combinationNum == 12) {
+        tempscore = chance(dices);
+    } else if(combinationNum == 13) {
+        tempscore = yahtzee(dices);
+    }
+    *score = tempscore;
+    printf("Score for this round = %d\n\n",tempscore);
 }
 
 //function that runs the 13 rounds
@@ -592,19 +481,17 @@ void runningFun(char *dices,int *combinationArray,int combinationIndexNumber,int
         printf("        YOUR MARKS     UPPER SECTION = %d  LOWER SECTION = %d   TOTAL SCORE = %d\n",sum1, sum2, sum1 + sum2 );
         printf("        AI MARKS       UPPER SECTION = %d  LOWER SECTION = %d   TOTAL SCORE = %d\n",AIsum1, AIsum2, AIsum1 + AIsum2 );
         userIndex(dices,combinationArray,combinationIndexNumberPointer);
-        //printf("Combination Type : %c",chars[combinationIndexNumber]);
-        combinationSelected(dices, combinationIndexNumberPointer, &tempscore);
+        scoreForCombination(dices, combinationIndexNumberPointer, &tempscore);
         if (*combinationIndexNumberPointer < 7) {
             sum1 = sum1 + tempscore;
         } else {
             sum2 = sum2 + tempscore;
         }
         dice_readings(AIdices);
-        //combinationSelected(AIdices,i,&AItempscore);
         printf("\nAI Dice Readings are : ");
         printDice(AIdices);
         printf("Combination Type : %s\n", chars[i]);
-        AIcombinationSelected(AIdices, i + 1, &AItempscore);
+        AIscoreForCombination(AIdices, i + 1, &AItempscore);
         if (i+1 < 7) {
             AIsum1 = AIsum1 + AItempscore;
         } else {
@@ -616,3 +503,18 @@ void runningFun(char *dices,int *combinationArray,int combinationIndexNumber,int
     *AInScore = AIsum1;
     *AIoScore = AIsum2;
 }
+
+
+
+// this function is to get the inputs in the correct data type.
+void clearInputBuffer() {
+    int ch;
+    while ((ch = getchar()) != '\n' && ch != EOF);  // Discard invalid input and clear buffer
+}
+
+
+//define the respective AI's combination for each round respective to the user's
+void AIIndex() {
+
+}
+
