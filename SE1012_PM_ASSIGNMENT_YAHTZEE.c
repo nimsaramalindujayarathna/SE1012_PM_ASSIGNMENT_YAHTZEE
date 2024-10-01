@@ -27,7 +27,7 @@ void instruct();
 int random_number();
 void dice_readings(char *dices);
 void diceRoll(char *dices);
-void printDice(char *dices);
+void printDice(char *dices, int lineBreak);
 
 //combinations fucntions
 int chance(char * dices);
@@ -50,7 +50,7 @@ void AIscoreForCombination(char *dices, int combinationNum, int *score);
 void clearInputBuffer();
 
 //final main function
-void runningFun(char *dices,int *combinationArray,int combinationIndexNumber,int *combinationIndexNumberPointer, int *nScore, int *oScore, char *AIdices, int *AInScore, int *AIoScore);
+void runningFun(char *dices,int *combinationArray,int *combinationIndexNumberPointer, int *nScore, int *oScore, char *AIdices, int *AInScore, int *AIoScore);
 
 
 int main() {
@@ -88,7 +88,7 @@ int main() {
     instruct();
 
     //running Function
-    runningFun(dices, combinationsArray, combinationIndexNumber, &combinationIndexNumber, &numbersScore, &otherScore, AIDices, &AInumbersScore, &AIotherScore);
+    runningFun(dices, combinationsArray, &combinationIndexNumber, &numbersScore, &otherScore, AIDices, &AInumbersScore, &AIotherScore);
 
     //display final Score
     scoreDisplay(user, numbersScore, otherScore, &finalScore);
@@ -173,11 +173,18 @@ void dice_readings(char *dices) {
 }
 
 // this function will generate 5 dice readings and store them in an array and the array name will be passed as an parameter
-void printDice(char *dices){
-    for (int i = 0; i < 5; i++){
-        printf("%d ",dices[i]);
+void printDice(char *dices, int lineBreak){
+    if (lineBreak == 1){
+        printf("\n");
     }
-    printf("\n");
+    printf("Dice Readings are : [");
+    for (int i = 0; i < 5; i++){
+        printf("%d",dices[i]);
+        if(i < 4){
+            printf(" ");
+        }
+    }
+    printf("]\n");
 }
 
 // this function will roll the dice 3 times and get the readings according to the user's preference and the array wich use to store the readings are pass as parameters
@@ -185,17 +192,17 @@ void diceRoll(char *dices) {
     char tempDices[5]; //tempary array to store temp dices
     int indexes; //indexs to keep
     int NoOfIndexes; // no of the indexes to keep
-    int I; // varible used to print the rolll NO
     char inputChar; 
-    printf("\nInital Dice Readings : ");
+    int i = 0;
+    printf("\nRoll NO (%d)      ",i+1);// this selection print the roll no
     dice_readings(dices); //Inital dice roll
-    printDice(dices); //Inital deice reads displayed
-    for (int i = 0; i < 2; i++) {
+    printDice(dices, 0); //Inital deice reads displayed
+    for (i = 0; i < 2; i++) {
         printf("Do you want to roll the dices again? Press Yes - 'Y' or No - 'N' : ");
         scanf(" %c",&inputChar);
         // input validation ---- inputChar
         while(!(inputChar == 'Y' || inputChar == 'y' || inputChar == 'N' || inputChar == 'n')){
-            printf("Invalid char input press either 'Y' or 'N'. Simple letters also works,\n");
+            printf("Invalid input! Please press 'Y' to roll again or 'N' to stop rolling.\n");
             scanf(" %c",&inputChar);
         }
         if (inputChar == 'Y' || inputChar == 'y') {
@@ -221,15 +228,15 @@ void diceRoll(char *dices) {
                 }
                 dices[indexes - 1] = tempDices[indexes - 1 ]; // the main array store the next roll data and occording to the indexes the values decided keep are assigned into the newly rolled main array
             }
-            I = i + 2;
-            printf("\nRoll NO (%d) : ",I); // this selection print the roll no
-            printDice(dices); // print the new dices rolls
+            printf("\nRoll NO (%d)      ",i+2); 
+            
+            printDice(dices, 0); // print the new dices rolls
         } else if (inputChar == 'N' || inputChar == 'n') {
             break; // if the user do not want to roll again escape the function
         } 
     }
-    printf("\nFinal Dice Readings are : ");
-    printDice(dices); // after 3 dice rools or users's prefered dice rolls print  the dices
+    printf("\nFinal ");
+    printDice(dices , 0); // after 3 dice rools or users's prefered dice rolls print  the dices
 }
 
 
@@ -455,7 +462,7 @@ void AIscoreForCombination(char *dices, int combinationNum, int *score){
 }
 
 //function that runs the 13 rounds
-void runningFun(char *dices,int *combinationArray,int combinationIndexNumber,int *combinationIndexNumberPointer, int *nScore, int *oScore, char *AIdices, int *AInScore, int *AIoScore){
+void runningFun(char *dices,int *combinationArray,int *combinationIndexNumberPointer, int *nScore, int *oScore, char *AIdices, int *AInScore, int *AIoScore){
     int tempscore; // score for the respective condition
     int AItempscore; // score for the respective AI combination
     int sum1 = 0;
@@ -477,10 +484,11 @@ void runningFun(char *dices,int *combinationArray,int combinationIndexNumber,int
     snprintf(chars[11], 20, "Chance");
     snprintf(chars[12], 20, "YAHTZEE");
     for (int i = 0; i < 13; i++) {
-        printf("\nRound No %d\n",i+1);                    
+        printf("\n--------- Round No %d ---------\n",i+1);                    
         printf("        YOUR MARKS     UPPER SECTION = %d  LOWER SECTION = %d   TOTAL SCORE = %d\n",sum1, sum2, sum1 + sum2 );
         printf("        AI MARKS       UPPER SECTION = %d  LOWER SECTION = %d   TOTAL SCORE = %d\n",AIsum1, AIsum2, AIsum1 + AIsum2 );
         userIndex(dices,combinationArray,combinationIndexNumberPointer);
+        printf("Combination Type : %s       ", chars[*combinationIndexNumberPointer - 1]);
         scoreForCombination(dices, combinationIndexNumberPointer, &tempscore);
         if (*combinationIndexNumberPointer < 7) {
             sum1 = sum1 + tempscore;
@@ -488,9 +496,9 @@ void runningFun(char *dices,int *combinationArray,int combinationIndexNumber,int
             sum2 = sum2 + tempscore;
         }
         dice_readings(AIdices);
-        printf("\nAI Dice Readings are : ");
-        printDice(AIdices);
-        printf("Combination Type : %s\n", chars[i]);
+        printf("\nAI ");
+        printDice(AIdices, 0);
+        printf("Combination Type : %s       ", chars[i]);
         AIscoreForCombination(AIdices, i + 1, &AItempscore);
         if (i+1 < 7) {
             AIsum1 = AIsum1 + AItempscore;
