@@ -121,18 +121,19 @@ void scoreDisplay(char *name, int nScore, int oScore, int *total) {
     //this function arguments are the players name and there respective scores of upper and lower combinations
     // and the respective total of the player. display how the score has been made for the player.
     int tot;
-    printf("\n%20s Score.", name);
-    printf("  Upper Combination Score : %3d", nScore);
+    printf("\n%15s Score.", name);
+    printf("  Upper Combination Score : %2d", nScore);
     printf("  Lower Combination Score : %3d    ", oScore);
-    printf("  Bonus Score : %d\n", bonus(nScore));
+    printf("  Bonus Score : %2d\n", bonus(nScore));
     tot = nScore + oScore + bonus(nScore);
-    printf("%20s Final Score : %3d\n\n",name, tot);
+    printf("%15s Final Score : %3d\n",name, tot);
     *total = tot;
 }
 
 void winner(int userFinal, int AIFinal, char *playerName, char *AIName) {
     //this function 's arguments are the final score and the names of the two players adn decides who won 
     //and prints the result
+    printf("\n");
     if(userFinal < AIFinal){
         printf("You tried your best but the %s is just better.", AIName);
     } else if(userFinal > AIFinal) {
@@ -473,7 +474,7 @@ void userIndex(char *dices, const char *com[], int *combinationArray,int *AIcomb
         
     }
     printf("\t\t\t\t  Total is :%3d", o + n);
-    printf(" |\t\t\t  Total is :%3d", AIo + AIn);
+    printf(" \t\t\t  Total is :%3d", AIo + AIn);
     printf("\n\n");
     if (check == 1) {
         return;
