@@ -38,6 +38,8 @@ struct player {
     int uScore;
     int lScore;
     int total;
+    int combinations[13];
+    int index;
 };
 
 ////FUNCTION PROTOTYPE
@@ -60,19 +62,19 @@ void diceRoll(char *dices);
 void playerName(char *name);
 void dice_readings(char *dices);
 void printDice(char *dices, int lineBreak);
+void AINumbers (char *dices, int index, int roll);
+void AIIndex(char *dices, int *comArray, int *AIIndex);
+void AISingleRollAgain(char *dices, int index, int roll);
+void AIscoreCal(char *dices, int combinationNum, int *score);
+void diceRollWithSingleIndex(char*dices, int index, int roll);
 void scoreDisplay(char *name, int nScore, int oScore, int *total);
 void winner(int userFinal, int AIFinal, char *playerName, char *AIName);
+void diceRollWithDoubleIndex(char*dices, int index1, int index2, int roll);
 void scoreForCombination(char *dices, int *combination, int *score, char *name);
 void AIscoreForCombination(char *dices, int combinationNum, int *score, char *name);
 void userIndex(char *dices, const char *com[], int *combinationArray,int *AIcombinationArray, int *combinationIndexNumber, char *name, char *AIname, int *Score, int*AIScore, int check, int n, int o, int AIn, int AIo);
 void runningFun(char *dices, const char *com[], int *combinationArray,int *AIcombinationArray, int *combinationIndexNumberPointer, int *nScore, int *oScore, char *AIdices, int *AInScore, int *AIoScore, char *playerName, char *AIName, int *Score, int*AIScore);
 
-void AIscoreCal(char *dices, int combinationNum, int *score);
-void AIIndex(char *dices, int *comArray, int *AIIndex);
-void AISingleRollAgain(char *dices, int index, int roll);
-void diceRollWithSingleIndex(char*dices, int index, int roll);
-void diceRollWithDoubleIndex(char*dices, int index1, int index2, int roll);
-void AINumbers (char *dices, int index, int roll);
 
 ////////FUNCTIONS DECLRATIONS
 
@@ -279,9 +281,9 @@ void diceRoll(char *dices) {
                 scanf("%d",&NoOfIndexes);
             }
             if (NoOfIndexes == 1) {
-                printf("Enter the index number of the dice reading you wanted keep, in the respecting order of the dice reading above. (1 to 5)\n");
+                printf("Enter the index number of the dice reading you wanted keep. (1 to 5)\n");
             } else if (NoOfIndexes > 1){
-                printf("Enter the index numbers of the dice readings you wanted keep, in the respecting order of the dice reading above. (1 to 5)\n");
+                printf("Enter the index numbers of the dice readings you wanted keep. (1 to 5)\n");
             }
             for (int ii = 1; ii < NoOfIndexes + 1; ii++){
                 printf("Enter the index number %d (1 to 5): ", ii );
@@ -429,52 +431,52 @@ void userIndex(char *dices, const char *com[], int *combinationArray,int *AIcomb
         printf("\nAll the Combinations were used.\n\n");
     }
     // this prints the currently available combinations for user to choose from.
-    printf("%20s's Combinations\t%20s's Combinations\n",name, AIname);
+    printf("%20s's Combinations\t  %20s's Combinations\n",name, AIname);
     for (int i = 0; i < 13; i++) { 
         if (i == 5) {
             if (combinationArray[i] == 0){
-                printf("\t\t%3d. %-18s %3d %3d",(i+1),com[i],Score[i], n);
+                printf("\t\t%3d. %-16s %3d %3d",(i+1),com[i],Score[i], n);
             } else if (combinationArray[i] == 1){
-                printf("\t\t\u00D7%2d. %-18s %3d %3d",(i+1),com[i], Score[i], n);
+                printf("\t\t\u00D7%2d. %-16s %3d %3d",(i+1),com[i], Score[i], n);
                 // printf("\t\t%21s %5d", spaces,Score[i]);
             }
             if (AIcombinationArray[i] == 0){
-                printf("\t|\t%3d. %-18s %3d %3d\n", (i+1), com[i], AIScore[i], AIn);
+                printf("\t |\t%3d. %-16s %3d %3d\n", (i+1), com[i], AIScore[i], AIn);
             } else if (AIcombinationArray[i] ==1) {
-                printf("\t|\t\u00D7%2d. %-18s %3d %3d\n",(i+1),com[i], AIScore[i], AIn);
+                printf("\t |\t\u00D7%2d. %-16s %3d %3d\n",(i+1),com[i], AIScore[i], AIn);
                 //printf("\t\t%21s %5d\n", spaces,AIScore[i]);
             }
         } else if (i == 12) {
             if (combinationArray[i] == 0){
-                printf("\t\t%3d. %-18s %3d %3d",(i+1),com[i],Score[i], o);
+                printf("\t\t%3d. %-16s %3d %3d",(i+1),com[i],Score[i], o);
             } else if (combinationArray[i] == 1){
-                printf("\t\t\u00D7%2d. %-18s %3d %3d",(i+1),com[i], Score[i], o);
+                printf("\t\t\u00D7%2d. %-16s %3d %3d",(i+1),com[i], Score[i], o);
                 // printf("\t\t%21s %5d", spaces,Score[i]);
             }
             if (AIcombinationArray[i] == 0){
-                printf("\t|\t%3d. %-18s %3d %3d\n", (i+1), com[i], AIScore[i], AIo);
+                printf("\t |\t%3d. %-16s %3d %3d\n", (i+1), com[i], AIScore[i], AIo);
             } else if (AIcombinationArray[i] ==1) {
-                printf("\t|\t\u00D7%2d. %-18s %3d %3d\n",(i+1),com[i], AIScore[i], AIo);
+                printf("\t |\t\u00D7%2d. %-16s %3d %3d\n",(i+1),com[i], AIScore[i], AIo);
                 //printf("\t\t%21s %5d\n", spaces,AIScore[i]);
             }
         }else {
             if (combinationArray[i] == 0){
-                printf("\t\t%3d. %-18s %3d",(i+1),com[i],Score[i]);
+                printf("\t\t%3d. %-16s %3d",(i+1),com[i],Score[i]);
             } else if (combinationArray[i] == 1){
-                printf("\t\t\u00D7%2d. %-18s %3d",(i+1),com[i], Score[i]);
+                printf("\t\t\u00D7%2d. %-16s %3d",(i+1),com[i], Score[i]);
                 // printf("\t\t%21s %5d", spaces,Score[i]);
             }
             if (AIcombinationArray[i] == 0){
-                printf("\t|\t%3d. %-18s %3d\n", (i+1), com[i], AIScore[i]);
+                printf("\t |\t%3d. %-16s %3d\n", (i+1), com[i], AIScore[i]);
             } else if (AIcombinationArray[i] ==1) {
-                printf("\t|\t\u00D7%2d. %-18s %3d\n",(i+1),com[i], AIScore[i]);
+                printf("\t |\t\u00D7%2d. %-16s %3d\n",(i+1),com[i], AIScore[i]);
                 //printf("\t\t%21s %5d\n", spaces,AIScore[i]);
             }
         }
         
     }
-    printf("\t\t\t\t  Total is :%3d", o + n);
-    printf(" \t\t\t  Total is :%3d", AIo + AIn);
+    printf("\t\t     Current Total Score: %3d", o + n);
+    printf("\t\t     Current Total Score: %3d", AIo + AIn);
     printf("\n\n");
     if (check == 1) {
         return;
@@ -605,6 +607,8 @@ void runningFun(char *dices, const char *com[], int *combinationArray,int *AIcom
     for (int i = 0; i < 13; i++) {
         Score[i] = 0;
         AIScore[i] = 0;
+        combinationArray[i] = 0;
+        AIcombinationArray[i] = 0;
     }
     for (int i = 0; i < 13; i++) {
         printf("\n\n\n****************************************  Round No %d  ****************************************\n",i+1);                    
@@ -642,7 +646,7 @@ void runningFun(char *dices, const char *com[], int *combinationArray,int *AIcom
         //printf("%20s   UPPER SECTION = %3d    LOWER SECTION = %3d     TOTAL SCORE = %3d\n",playerName ,sum1, sum2, sum1 + sum2 );
         //printf("%20s   UPPER SECTION = %3d    LOWER SECTION = %3d     TOTAL SCORE = %3d\n\n",AIName, AIsum1, AIsum2, AIsum1 + AIsum2 );
         if (i < 12) {
-            //next();
+            next();
         } 
     }
     *nScore = sum1;
@@ -653,16 +657,12 @@ void runningFun(char *dices, const char *com[], int *combinationArray,int *AIcom
 }
 
 
-//other mini functions used for the input validation of the game
-void clearInputs() {
-    // this function is used to get the inputs in the correct data type.
-    int input;
-    while ((input = getchar()) != '\n' && input != EOF);  // remove invalid inputs and clear other inputs EOF - end of file
-}
-
-
 //Ai functions
 void AIIndex(char *dices, int *comArray, int *AIIndex) {
+    // this is the main function that implements the AI.
+    // parameter are the AI's dice readings, combination check array to check which combinations were selected, respective index no for the selected combination is pointed to a variable where it is called.
+    // this function will choose the best combination out of the available combinations by comparing the scores for each combination
+    // also inside this function fi there are 3same dice reading they rolled agan in order to obtain a four of akind or a yahtzee, vi versa for the 4 same dices redaings.
     int scores[] = {0,0,0,0,0,0,0,0,0,0,0,0,0};
     int index = 99;
     int scorecheck = 0;
@@ -683,13 +683,13 @@ void AIIndex(char *dices, int *comArray, int *AIIndex) {
         int temp = 0;
         for (int i = 0; i < 13; i++) {
             if (comArray[i] == 0) {
-                if (i == 11) {
+                if (i == 11) { // skipping chances combination until 11+ round
                     continue;
                 } 
                 if (temp < scores[i]) {
                     temp = scores[i];
                     index = i;
-                    if (i == 12) {
+                    if (i == 12) { //prioritising the yahtzee and full house combinations.
                         goto end1;
                     }
                     if (i == 8) {
@@ -701,25 +701,20 @@ void AIIndex(char *dices, int *comArray, int *AIIndex) {
             }
         }
         if (index > 7 && index != 99 && index != 12) {
-            //printf("%d\n", index);
-            goto end1;
+            goto end1; // skip if the combinations is yahtzee or  
         }
         if (l < 2){
             if(comArray[12] == 0 || comArray[6] == 0 || comArray[7] == 0) {
                 if (sortNumber == 3) {
-                    //printf("\t3 run\n");
                     AISingleRollAgain(dices, 6, l);
-                    //printf("%d\n",l);
                     continue;
                 }
                 if (sortNumber == 4) {
-                    //printf("\t4 run\n");
                     AISingleRollAgain(dices, 7, l);
                     continue;
                 }
             }
             if (index < 6) {
-                //printf("\tNumbers run\n");
                 AINumbers(dices, index, l);
                 continue;
             }
@@ -753,12 +748,16 @@ void AIIndex(char *dices, int *comArray, int *AIIndex) {
 }
 
 void AISingleRollAgain(char *dices, int index, int roll) {
+    // this function is designed to roll the Ai dice reaings, if only one dice is needed to be rolled.
+    // parameteres are the AI dices index which the dice reaings should roll, and the roll no to display
+    // if the index is 6 it will run the singleindex function which can only roll 1 dice.
+    // if the inedx is 7 it will run the double index function which can roll upto 2 dice readings.
     int singleNumber, indexNo, index1, index2;
     int sortedArray[] = {0, 0, 0, 0, 0, 0}; 
     for (int i = 0; i < 5; i++) {
         sortedArray[dices[i] - 1]++ ;
     }
-    if(index == 7) {
+    if(index == 7) { //checking whether the dices are needed to change 1 or 2 readings.
         for (int i = 0; i < 5; i++) {
             if (sortedArray[i] == 1) {
                 singleNumber = i + 1;
@@ -800,6 +799,8 @@ void AISingleRollAgain(char *dices, int index, int roll) {
 }
 
 void diceRollWithSingleIndex(char*dices, int index, int roll) {
+    // this function is designed to roll the Ai dice reaings, if only single dice is needed to be rolled.
+    // parameteres are the AI dices indexes which the dice readings should roll, and the roll no to display
     int tempArray[] = {0, 0, 0, 0, 0};
     for (int i = 0; i < 5; i++) {
         tempArray[i] =  dices[i];
@@ -826,6 +827,8 @@ void diceRollWithSingleIndex(char*dices, int index, int roll) {
 }
 
 void diceRollWithDoubleIndex(char*dices, int index1, int index2, int roll) {
+    // this function is designed to roll the Ai dice reaings, if only two dices are needed to be rolled.
+    // parameteres are the AI dices indexes which the dice readings should roll, and the roll no to display
     int tempArray[] = {0, 0, 0, 0, 0};
     for (int i = 0; i < 5; i++) {
         tempArray[i] =  dices[i];
@@ -852,6 +855,8 @@ void diceRollWithDoubleIndex(char*dices, int index1, int index2, int roll) {
 }
 
 void AINumbers (char *dices, int index, int roll) {
+    // this function is designed to roll the dices again if the best combination is choose as a upper combination.
+    // this function will try to rolll the dices again to get more of the same number which is choosn for the combination.
     int tempArray[] = {0, 0, 0, 0, 0};
     int diceNumber = index + 1;
     for (int i = 0; i < 5; i++) {
@@ -880,41 +885,35 @@ void AINumbers (char *dices, int index, int roll) {
 }
 
 
+
+//other mini functions used for the input validation of the game
+void clearInputs() {
+    // this function is used to get the inputs in the correct data type.
+    int input;
+    while ((input = getchar()) != '\n' && input != EOF);  // remove invalid inputs and clear other inputs EOF - end of file
+}
+
+
 int main() {
     srand(time(0));// only call once. this will generate random numbers compared to the time in seconds. this will remove the squential random number ger=neration.
 
-    //struct
+    //defining the structures
     struct player y;
     struct player AI;
-    
-    //othere variables
-    int checkNumber[] = {0, 0, 0, 0, 0, 0} ;
-
-    //variables to store combinations selected
-    int combinationsArray[13] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-    int combinationIndexNumber;
-    int AICombinationsArray[13] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-
-
     //instructions to play 
-    // instruct();
-
-    // //getting the names of the players
+    instruct();
+    // input the names of the players
     playerName(y.name);
     AIName(AI.name);
-
-    // important();
-
+    //important information how the games should be played
+    important();
     //running Function
-    runningFun(y.dice, combinationNames, combinationsArray,AICombinationsArray, &combinationIndexNumber, &y.uScore, &y.lScore, AI.dice, &AI.uScore, &AI.lScore, y.name, AI.name, y.scoredScore, AI.scoredScore);
-
+    runningFun(y.dice, combinationNames, y.combinations, AI.combinations, &y.index, &y.uScore, &y.lScore, AI.dice, &AI.uScore, &AI.lScore, y.name, AI.name, y.scoredScore, AI.scoredScore);
     //display final Score
     scoreDisplay(y.name, y.uScore, y.lScore, &y.total);
     scoreDisplay(AI.name, AI.uScore, AI.lScore, &AI.total);
-    
     //choosing the winner
     winner(y.total, AI.total, y.name, AI.name);
-
     return 0;
 }
 
