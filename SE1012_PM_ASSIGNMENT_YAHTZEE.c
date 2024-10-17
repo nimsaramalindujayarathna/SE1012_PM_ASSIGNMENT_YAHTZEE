@@ -31,7 +31,7 @@ const char *combinationNames[13] = {
     "Small Straight", "Large Straight", "Chance", "YAHTZEE"
 };
 
-struct player {
+typedef struct{
     char name[25];
     char dice[5];
     int scoredScore[13];
@@ -40,7 +40,7 @@ struct player {
     int total;
     int combinations[13];
     int index;
-};
+}players_t;
 
 ////FUNCTION PROTOTYPE
 int random_number();
@@ -276,6 +276,7 @@ void diceRoll(char *dices) {
             printf("Enter how many dice readings you want to keep before the next roll : "); 
             scanf("%d",&NoOfIndexes);
             //input validation ---- NoofIndexes
+            //infinite loop fix this
             while(!((NoOfIndexes >= 0) && (NoOfIndexes < 5))){
                 printf("Invalid number of indexes. Please enter again. [0, 1, 2, 3, 4] : ");
                 scanf("%d",&NoOfIndexes);
@@ -885,7 +886,6 @@ void AINumbers (char *dices, int index, int roll) {
 }
 
 
-
 //other mini functions used for the input validation of the game
 void clearInputs() {
     // this function is used to get the inputs in the correct data type.
@@ -898,22 +898,22 @@ int main() {
     srand(time(0));// only call once. this will generate random numbers compared to the time in seconds. this will remove the squential random number ger=neration.
 
     //defining the structures
-    struct player y;
-    struct player AI;
+    players_t human;
+    players_t AI;
     //instructions to play 
     instruct();
     // input the names of the players
-    playerName(y.name);
+    playerName(human.name);
     AIName(AI.name);
     //important information how the games should be played
     important();
     //running Function
-    runningFun(y.dice, combinationNames, y.combinations, AI.combinations, &y.index, &y.uScore, &y.lScore, AI.dice, &AI.uScore, &AI.lScore, y.name, AI.name, y.scoredScore, AI.scoredScore);
+    runningFun(human.dice, combinationNames, human.combinations, AI.combinations, &human.index, &human.uScore, &human.lScore, AI.dice, &AI.uScore, &AI.lScore, human.name, AI.name, human.scoredScore, AI.scoredScore);
     //display final Score
-    scoreDisplay(y.name, y.uScore, y.lScore, &y.total);
+    scoreDisplay(human.name, human.uScore, human.lScore, &human.total);
     scoreDisplay(AI.name, AI.uScore, AI.lScore, &AI.total);
     //choosing the winner
-    winner(y.total, AI.total, y.name, AI.name);
+    winner(human.total, AI.total, human.name, AI.name);
     return 0;
 }
 
