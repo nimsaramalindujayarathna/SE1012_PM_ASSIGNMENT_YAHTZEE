@@ -31,7 +31,7 @@ const char *combinationNames[13] = {
     "Small Straight", "Large Straight", "Chance", "YAHTZEE"
 };
 
-typedef struct{
+typedef struct {
     char name[25];
     char dice[5];
     int scoredScore[13];
@@ -40,7 +40,7 @@ typedef struct{
     int total;
     int combinations[13];
     int index;
-}players_t;
+}players;
 
 ////FUNCTION PROTOTYPE
 int random_number();
@@ -58,7 +58,6 @@ void important();
 void clearInputs();
 void AIName(char *name);
 void editName(char *name);
-void diceRoll(char *dices);
 void playerName(char *name);
 void dice_readings(char *dices);
 void printDice(char *dices, int lineBreak);
@@ -70,10 +69,11 @@ void diceRollWithSingleIndex(char*dices, int index, int roll);
 void scoreDisplay(char *name, int nScore, int oScore, int *total);
 void winner(int userFinal, int AIFinal, char *playerName, char *AIName);
 void diceRollWithDoubleIndex(char*dices, int index1, int index2, int roll);
+void printScoresForUser(char *dices, int *combinationsArray, const char *com[]);
 void scoreForCombination(char *dices, int *combination, int *score, char *name);
 void AIscoreForCombination(char *dices, int combinationNum, int *score, char *name);
 void userIndex(char *dices, const char *com[], int *combinationArray,int *AIcombinationArray, int *combinationIndexNumber, char *name, char *AIname, int *Score, int*AIScore, int check, int n, int o, int AIn, int AIo);
-void runningFun(char *dices, const char *com[], int *combinationArray,int *AIcombinationArray, int *combinationIndexNumberPointer, int *nScore, int *oScore, char *AIdices, int *AInScore, int *AIoScore, char *playerName, char *AIName, int *Score, int*AIScore);
+void runningFun(char *dices, const char *com[], int *combinationArray,int *AIcombinationArray, int *combinationIndexNumberPointer, int *nScore, int *oScore, char *AIdices, int *AInScore, int *AIoScore, char *playerName, char *AIName, int *Score, int *AIScore);
 
 
 ////////FUNCTIONS DECLRATIONS
@@ -245,17 +245,19 @@ void printDice(char *dices, int lineBreak){
     printf("]\n");
 }
 
-void diceRoll(char *dices) {
+void diceRoll(char *dices, int *combinationsArray, const char *com[]) {
     // this function will roll the dice 3 times and get the readings according to the user's preference and the array which use to store the readings are passed as argument(pointer)
     char tempDices[5]; //tempary array to store temp dices
     int indexes; //indexs to keep
     int NoOfIndexes; // no of the indexes to keep
     char inputChar; 
     int i = 0;
-    printf("\nRoll NO (%d)      ",i+1);// this selection print the roll no
+    printf("\nRoll NO (%d)\t",i+1);// this selection print the roll no
     dice_readings(dices); //Inital dice roll
     printDice(dices, 0); //Inital deice reads displayed
+    printScoresForUser(dices, combinationsArray, com);
     for (i = 0; i < 2; i++) {
+        int indexCheckArray[] = {0, 0, 0, 0, 0};
         printf("If you want to roll the dices again     Press ---- 'Y'\n");
         printf("If you want to keep this dice readings  Press ---- 'N'\n");
         printf("Enter your decision : ");
@@ -273,13 +275,21 @@ void diceRoll(char *dices) {
                 tempDices[j] = dices[j]; //store the main array data to temp array to roll the dices again, while the values in the temp arrary are used to do the execution
             }
             dice_readings(dices); // next dice rolls. actually the programm roll the dice and store it in a temp array before asking the user what to do with the previous dice readings.
-            printf("Enter how many dice readings you want to keep before the next roll : "); 
-            scanf("%d",&NoOfIndexes);
+            printf("Enter how many dice readings you want to keep before the next roll : ");
             //input validation ---- NoofIndexes
-            //infinite loop fix this
-            while(!((NoOfIndexes >= 0) && (NoOfIndexes < 5))){
-                printf("Invalid number of indexes. Please enter again. [0, 1, 2, 3, 4] : ");
-                scanf("%d",&NoOfIndexes);
+            while(1) {
+                if (scanf("%d", &NoOfIndexes) != 1) {
+                    printf("Invalid Input type. Please enter again. [0, 1, 2, 3, 4] : ");
+                    clearInputs();   
+                    continue;
+                }
+                if ((NoOfIndexes < 0) || (NoOfIndexes > 4)) {
+                    printf("Invalid number of indexes. Please enter again. [0, 1, 2, 3, 4] : ");
+                    clearInputs();   
+                    continue;
+                }
+                clearInputs();
+                break;
             }
             if (NoOfIndexes == 1) {
                 printf("Enter the index number of the dice reading you wanted keep. (1 to 5)\n");
@@ -288,17 +298,31 @@ void diceRoll(char *dices) {
             }
             for (int ii = 1; ii < NoOfIndexes + 1; ii++){
                 printf("Enter the index number %d (1 to 5): ", ii );
-                scanf("%d",&indexes);
-                // input validation ---- indexes
-                while(!((indexes > 0) && (indexes < 6))) {
-                    printf("Invalid index enterd. Please enter again. (1 to 5) :");
-                    scanf("%d",&indexes);
+                while(1) {
+                    if (scanf("%d", &indexes) != 1) {
+                        printf("Invalid Input type. Please enter again. (1 to 5) : ");
+                        clearInputs();
+                        continue;
+                    }
+                    if ((indexes < 1) || (indexes > 5)) {
+                        printf("Incorrect index enterd. Please enter again. (1 to 5) : ");
+                        clearInputs();
+                        continue;
+                    }
+                    if (indexCheckArray[indexes - 1] == 1) {
+                        printf("You entered the same index again. Please enter again. (1 to 5) : ");
+                        clearInputs();
+                        continue;
+                    }
+                    break;
                 }
+                indexCheckArray[indexes -1] = 1;
                 dices[indexes - 1] = tempDices[indexes - 1 ]; // the main array store the next roll data and occording to the indexes the values decided keep are assigned into the newly rolled main array
             }
-            printf("\nRoll NO (%d)      ",i+2); 
+            printf("\n\nRoll NO (%d)\t",i+2); 
             clearInputs();
             printDice(dices, 0); // print the new dices rolls
+            printScoresForUser(dices, combinationsArray, com);
         } else if (inputChar == 'N' || inputChar == 'n') {
             break; // if the user do not want to roll again escape the function
         } 
@@ -419,7 +443,7 @@ int threeOfaKind(char *dices){
 }
 
 
-//main function that are used to play the game
+//main function that are used to play the game for the user's sside
 void userIndex(char *dices, const char *com[], int *combinationArray,int *AIcombinationArray, int *combinationIndexNumber, char *name, char *AIname, int *Score, int*AIScore, int check, int n, int o, int AIn, int AIo){
     ////this function is used to get the user's prefered combination for each dice rounds
     // arguments users dice readings, combination names string, combination array is used to pass and check the already selected combinations,
@@ -482,7 +506,7 @@ void userIndex(char *dices, const char *com[], int *combinationArray,int *AIcomb
     if (check == 1) {
         return;
     }
-    diceRoll(dices);
+    diceRoll(dices, combinationArray, com);
     //input validation for indexI variable
     while (1) {
         printf("Choose an available combination no (1 to 13): ");
@@ -493,11 +517,15 @@ void userIndex(char *dices, const char *com[], int *combinationArray,int *AIcomb
         }
         if (index < 1 || index > 13) { //for out of ranges inouts
             printf("Invalid input value. Please enter a number between 1 and 13.\n");
-        } else if (combinationArray[index - 1] == 1) { // for prevoiously inutted value check
+            clearInputs();
+            continue;
+        } 
+        if (combinationArray[index - 1] == 1) { // for prevoiously inutted value check
             printf("This combination has already been chosen! Please pick another.\n");
-        } else {
-            break;  // if the input is valid loop break
-        }
+            clearInputs();
+            continue;
+        } 
+        break;  // if the input is valid loop break
     }
     combinationArray[index - 1] = 1;
     *combinationIndexNumber = index;
@@ -644,10 +672,8 @@ void runningFun(char *dices, const char *com[], int *combinationArray,int *AIcom
             AIsum2 = AIsum2 + AItempscore;
         }               
         AIScore[AIIndexNum] = AItempscore;
-        //printf("%20s   UPPER SECTION = %3d    LOWER SECTION = %3d     TOTAL SCORE = %3d\n",playerName ,sum1, sum2, sum1 + sum2 );
-        //printf("%20s   UPPER SECTION = %3d    LOWER SECTION = %3d     TOTAL SCORE = %3d\n\n",AIName, AIsum1, AIsum2, AIsum1 + AIsum2 );
         if (i < 12) {
-            next();
+            //next();
         } 
     }
     *nScore = sum1;
@@ -655,6 +681,20 @@ void runningFun(char *dices, const char *com[], int *combinationArray,int *AIcom
     *AInScore = AIsum1;
     *AIoScore = AIsum2;
     userIndex(dices,com ,combinationArray, AIcombinationArray, combinationIndexNumberPointer, playerName,AIName, Score, AIScore, 1, sum1, sum2, AIsum1, AIsum2);
+}
+
+void printScoresForUser(char *dices, int *combinationsArray, const char *com[]) {
+    int sscores[] = {0,0,0,0,0,0,0,0,0,0,0,0,0};
+    for (int i = 0; i < 13; i++) {
+            AIscoreCal(dices, i + 1, &sscores[i]);
+        }
+    printf("\n  Score for every Combination availabel for the current dice Readings\n\n");
+    for (int i = 0; i < 13; i++) {
+        if (combinationsArray[i] == 0){
+            printf("\t\t  %2d. %-16s %2d\n", i+1, com[i], sscores[i]);
+        }
+    }
+    printf("\n");
 }
 
 
@@ -894,26 +934,28 @@ void clearInputs() {
 }
 
 
+
+
 int main() {
     srand(time(0));// only call once. this will generate random numbers compared to the time in seconds. this will remove the squential random number ger=neration.
 
     //defining the structures
-    players_t human;
-    players_t AI;
+    players y;
+    players AI;
     //instructions to play 
-    instruct();
+    //instruct();
     // input the names of the players
-    playerName(human.name);
-    AIName(AI.name);
+    //playerName(y.name);
+    //AIName(AI.name);
     //important information how the games should be played
-    important();
+    //important();
     //running Function
-    runningFun(human.dice, combinationNames, human.combinations, AI.combinations, &human.index, &human.uScore, &human.lScore, AI.dice, &AI.uScore, &AI.lScore, human.name, AI.name, human.scoredScore, AI.scoredScore);
+    runningFun(y.dice, combinationNames, y.combinations, AI.combinations, &y.index, &y.uScore, &y.lScore, AI.dice, &AI.uScore, &AI.lScore, y.name, AI.name, y.scoredScore, AI.scoredScore);
     //display final Score
-    scoreDisplay(human.name, human.uScore, human.lScore, &human.total);
+    scoreDisplay(y.name, y.uScore, y.lScore, &y.total);
     scoreDisplay(AI.name, AI.uScore, AI.lScore, &AI.total);
     //choosing the winner
-    winner(human.total, AI.total, human.name, AI.name);
+    winner(y.total, AI.total, y.name, AI.name);
     return 0;
 }
 
