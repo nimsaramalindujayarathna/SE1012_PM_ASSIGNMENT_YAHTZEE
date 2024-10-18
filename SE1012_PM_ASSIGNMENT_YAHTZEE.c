@@ -59,7 +59,7 @@ void clearInputs();
 void AIName(char *name);
 void editName(char *name);
 void playerName(char *name);
-void dice_readings(char *dices);
+void diceReadings(char *dices);
 void printDice(char *dices, int lineBreak);
 void AINumbers (char *dices, int index, int roll);
 void AIIndex(char *dices, int *comArray, int *AIIndex);
@@ -119,6 +119,12 @@ void AIName(char *name) {
 
 
 //outputs
+int bonus(int numbersScore){
+    //this functions argumnet is the final score adn decides the bonus score and retunrs it 
+    //occording to the upper combinations score
+    return (numbersScore > 62)? 35:0;
+}
+
 void scoreDisplay(char *name, int nScore, int oScore, int *total) {
     //this function arguments are the players name and there respective scores of upper and lower combinations
     // and the respective total of the player. display how the score has been made for the player.
@@ -146,22 +152,16 @@ void winner(int userFinal, int AIFinal, char *playerName, char *AIName) {
     printf("\n\n");
 }
 
-int bonus(int numbersScore){
-    //this functions argumnet is the final score adn decides the bonus score and retunrs it 
-    //occording to the upper combinations score
-    return (numbersScore > 62)? 35:0;
-}
-
 void instruct(){
     //gives the player the necessary instruction to play.
     char charInput;
     printf (
-        "This game is played over 13 rounds, and in each round, players can roll the dice up to three times.\
+        "\n\nThis game is played over 13 rounds, and in each round, players can roll the dice up to three times.\
         \nAfter each roll, they can choose to keep or re-roll any number of dice readings.\
-        \nChoose best combination out of the combinations available.\
+        \nChoose the best combination out of the combinations available.\
         \nPlyer has to achieve a higher score than the computer player in order to win.\
         \nPlayer can go to next round after the computer player rolled the dices for the current round.\
-        \n\nDo you want more information of the Scoring Dice Combinations. Yes - 'Y'   No - 'N' :"
+        \n\nDo you want more information of the Scoring Dice Combinations. Yes - 'Y'   No - 'N' : "
     );
     //Input Validation
     while(1) {
@@ -221,7 +221,7 @@ int random_number(){
     return (rand() % 6) + 1;
 } 
 
-void dice_readings(char *dices) {
+void diceReadings(char *dices) {
     // this fuction will store 5 randome numbers as dice readings when the each players dice array is passed as an argument
     for (int i = 0; i < 5; i++){
         dices[i] = random_number();
@@ -252,8 +252,8 @@ void diceRoll(char *dices, int *combinationsArray, const char *com[]) {
     int NoOfIndexes; // no of the indexes to keep
     char inputChar; 
     int i = 0;
-    printf("\nRoll NO (%d)\t",i+1);// this selection print the roll no
-    dice_readings(dices); //Inital dice roll
+    printf("\nRoll NO (%d) >>>> ",i+1);// this selection print the roll no
+    diceReadings(dices); //Inital dice roll
     printDice(dices, 0); //Inital deice reads displayed
     printScoresForUser(dices, combinationsArray, com);
     for (i = 0; i < 2; i++) {
@@ -274,7 +274,7 @@ void diceRoll(char *dices, int *combinationsArray, const char *com[]) {
             for (int j = 0; j < 5; j++ ) {
                 tempDices[j] = dices[j]; //store the main array data to temp array to roll the dices again, while the values in the temp arrary are used to do the execution
             }
-            dice_readings(dices); // next dice rolls. actually the programm roll the dice and store it in a temp array before asking the user what to do with the previous dice readings.
+            diceReadings(dices); // next dice rolls. actually the programm roll the dice and store it in a temp array before asking the user what to do with the previous dice readings.
             printf("Enter how many dice readings you want to keep before the next roll : ");
             //input validation ---- NoofIndexes
             while(1) {
@@ -319,8 +319,10 @@ void diceRoll(char *dices, int *combinationsArray, const char *com[]) {
                 indexCheckArray[indexes -1] = 1;
                 dices[indexes - 1] = tempDices[indexes - 1 ]; // the main array store the next roll data and occording to the indexes the values decided keep are assigned into the newly rolled main array
             }
-            printf("\n\nRoll NO (%d)\t",i+2); 
-            clearInputs();
+            printf("\n\nRoll NO (%d) >>>> ",i+2); 
+            if (NoOfIndexes != 0) {
+                clearInputs();
+            }
             printDice(dices, 0); // print the new dices rolls
             printScoresForUser(dices, combinationsArray, com);
         } else if (inputChar == 'N' || inputChar == 'n') {
@@ -645,7 +647,7 @@ void runningFun(char *dices, const char *com[], int *combinationArray,int *AIcom
         printf("%20s   UPPER SECTION = %3d    LOWER SECTION = %3d     TOTAL SCORE = %3d\n",AIName, AIsum1, AIsum2, AIsum1 + AIsum2 );
         userIndex(dices,com ,combinationArray, AIcombinationArray, combinationIndexNumberPointer, playerName,AIName, Score, AIScore, 0, sum1, sum2, AIsum1, AIsum2);
         printf("---------------------------------------------------------------------------------------------\n");
-        dice_readings(AIdices);
+        diceReadings(AIdices);
         printf("\n%s's dice readings\n",AIName);
         printf("Roll NO (1) - ");
         printDice(AIdices, 0);
@@ -673,7 +675,7 @@ void runningFun(char *dices, const char *com[], int *combinationArray,int *AIcom
         }               
         AIScore[AIIndexNum] = AItempscore;
         if (i < 12) {
-            //next();
+            next();
         } 
     }
     *nScore = sum1;
@@ -766,12 +768,12 @@ void AIIndex(char *dices, int *comArray, int *AIIndex) {
                     index = i;
                     switch (l) {
                         case 0:
-                            dice_readings(dices);
+                            diceReadings(dices);
                             printf("Roll NO (2) - ");
                             printDice(dices,0);
                             break;
                         case 1:
-                            dice_readings(dices);
+                            diceReadings(dices);
                             printf("Roll NO (3) - ");
                             printDice(dices,0);
                             break;
@@ -846,7 +848,7 @@ void diceRollWithSingleIndex(char*dices, int index, int roll) {
     for (int i = 0; i < 5; i++) {
         tempArray[i] =  dices[i];
     }
-    dice_readings(dices);
+    diceReadings(dices);
     for (int i = 0; i < 5; i++) {
         if (i == index){
             continue;
@@ -874,7 +876,7 @@ void diceRollWithDoubleIndex(char*dices, int index1, int index2, int roll) {
     for (int i = 0; i < 5; i++) {
         tempArray[i] =  dices[i];
     }
-    dice_readings(dices);
+    diceReadings(dices);
     for (int i = 0; i < 5; i++) {
         if (i == index1 || i == index2){
             continue;
@@ -905,7 +907,7 @@ void AINumbers (char *dices, int index, int roll) {
             tempArray[i] = dices[i];
         }
     }
-    dice_readings(dices);
+    diceReadings(dices);
     for (int i = 0; i < 5; i++) {
         if (tempArray[i] != 0) {
             dices[i] = tempArray[i];
@@ -934,28 +936,32 @@ void clearInputs() {
 }
 
 
-
-
 int main() {
     srand(time(0));// only call once. this will generate random numbers compared to the time in seconds. this will remove the squential random number ger=neration.
 
     //defining the structures
-    players y;
+    players user;
     players AI;
+
     //instructions to play 
-    //instruct();
+    instruct();
+
     // input the names of the players
-    //playerName(y.name);
-    //AIName(AI.name);
+    playerName(user.name);
+    AIName(AI.name);
+
     //important information how the games should be played
-    //important();
+    important();
+
     //running Function
-    runningFun(y.dice, combinationNames, y.combinations, AI.combinations, &y.index, &y.uScore, &y.lScore, AI.dice, &AI.uScore, &AI.lScore, y.name, AI.name, y.scoredScore, AI.scoredScore);
+    runningFun(user.dice, combinationNames, user.combinations, AI.combinations, &user.index, &user.uScore, &user.lScore, AI.dice, &AI.uScore, &AI.lScore, user.name, AI.name, user.scoredScore, AI.scoredScore);
+    
     //display final Score
-    scoreDisplay(y.name, y.uScore, y.lScore, &y.total);
+    scoreDisplay(user.name, user.uScore, user.lScore, &user.total);
     scoreDisplay(AI.name, AI.uScore, AI.lScore, &AI.total);
+
     //choosing the winner
-    winner(y.total, AI.total, y.name, AI.name);
+    winner(user.total, AI.total, user.name, AI.name);
     return 0;
 }
 
