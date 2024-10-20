@@ -41,11 +41,14 @@
 #define DIM            "\033[2m"
 #define ITALIC         "\033[3m"
 #define UNDERLINED     "\033[4m"
-#define DOUBLE_UNDERLINED "\033[21m"
 #define BLINKING       "\033[5m"
 #define INVERTED       "\033[7m"
 #define HIDDEN         "\033[8m"
 #define STRIKETHROUGH  "\033[9m"
+//#define BRIGHT_CYAN_BG "\033[46m"
+#define HIGH_SCORE_TEXT "\033[1m\033[30m"  // Bold black text
+#define HIGH_SCORE_BG "\033[46m"
+//#define HIGH_SCORE_TEXT "\033[1m\033[37m"  // Bold white text
 
 // Reset Code
 #define RESET "\033[0m"
@@ -319,10 +322,13 @@ void diceRoll(char *dices, int *combinationsArray, const char *com[]) {
     printScoresForUser(dices, combinationsArray, com);
     for (i = 0; i < 2; i++) {
         int indexCheckArray[] = {0, 0, 0, 0, 0};
+        timer(600);
         printf("If you want to roll the dices again     ");
         printf(RESET BOLD ITALIC "Press ---- 'Y'\n"RESET);
+        timer(600);
         printf("If you want to keep this dice readings  ");
         printf(RESET BOLD ITALIC "Press ---- 'N'\n"RESET);
+        timer(600);
         printf("Enter your decision : ");
         scanf(" %c",&inputChar);
         // input validation ---- inputChar
@@ -338,6 +344,7 @@ void diceRoll(char *dices, int *combinationsArray, const char *com[]) {
                 tempDices[j] = dices[j]; //store the main array data to temp array to roll the dices again, while the values in the temp arrary are used to do the execution
             }
             diceReadings(dices); // next dice rolls. actually the programm roll the dice and store it in a temp array before asking the user what to do with the previous dice readings.
+            timer(500);
             printf("Enter how many dice readings you want to keep before the next roll : ");
             //input validation ---- NoofIndexes
             while(1) {
@@ -355,11 +362,14 @@ void diceRoll(char *dices, int *combinationsArray, const char *com[]) {
                 break;
             }
             if (NoOfIndexes == 1) {
+                timer(800);
                 printf("Enter the index number of the dice reading you wanted keep. (1 to 5)\n");
             } else if (NoOfIndexes > 1){
+                timer(800);
                 printf("Enter the index numbers of the dice readings you wanted keep. (1 to 5)\n");
             }
             for (int ii = 1; ii < NoOfIndexes + 1; ii++){
+                timer(600);
                 printf("Enter the index number %d (1 to 5): ", ii );
                 while(1) {
                     if (scanf("%d", &indexes) != 1) {
@@ -520,8 +530,10 @@ void userIndex(char *dices, const char *com[], int *combinationArray,int *AIcomb
     char spaces[] = {" "};
     if (check == 0) {
         printf("\nCombinations Available to Choose.\n\n");
+        timer(750);
     } else if (check == 1) {
         printf("\nAll the Combinations were used.\n\n");
+        timer(750);
     }
     // this prints the currently available combinations for user to choose from.
     printf("%20s's Combinations\t  %20s's Combinations\n",name, AIname);
@@ -579,6 +591,7 @@ void userIndex(char *dices, const char *com[], int *combinationArray,int *AIcomb
         }
         
     }
+    timer(1200);
     printf(BOLD "\t\t    Current Total Score: %3d" RESET , o + n);
     printf(BOLD "\t\t    Current Total Score: %3d" RESET , AIo + AIn);
     printf("\n\n");
@@ -784,13 +797,29 @@ void runningFun(char *dices, const char *com[], int *combinationArray,int *AIcom
 
 void printScoresForUser(char *dices, int *combinationsArray, const char *com[]) {
     int sscores[] = {0,0,0,0,0,0,0,0,0,0,0,0,0};
+    int maxScore = 0;
     for (int i = 0; i < 13; i++) {
             AIscoreCal(dices, i + 1, &sscores[i]);
+    }
+    printf("\n  ");
+    printf(UNDERLINED"Score for every Combination availabel for the current dice Readings"RESET);
+    printf("\n\n");
+    for (int i = 0; i < 13; i++) {
+        if ((combinationsArray[i] == 0) && (maxScore < sscores[i])){
+            maxScore = sscores[i];
         }
-    printf("\n  Score for every Combination availabel for the current dice Readings\n\n");
+    }
     for (int i = 0; i < 13; i++) {
         if (combinationsArray[i] == 0){
-            printf("\t\t  %2d. %-16s %2d\n", i+1, com[i], sscores[i]);
+            if(sscores[i] == maxScore) {
+                timer(250);
+                printf("\t\t  ");
+                printf(HIGH_SCORE_BG HIGH_SCORE_TEXT"%2d. %-16s %2d"RESET, i+1, com[i], sscores[i]);
+                printf("\n");
+            } else {
+                timer(250);
+                printf("\t\t  %2d. %-16s %2d\n", i+1, com[i], sscores[i]);
+            }
         }
     }
     printf("\n");
@@ -1063,14 +1092,14 @@ int main() {
     players AI;
 
     //instructions to play 
-    instruct();
+    //instruct();
 
     // input the names of the players
-    playerName(user.name);
-    AIName(AI.name);
+    //playerName(user.name);
+    //AIName(AI.name);
 
     //important information how the games should be played
-    important();
+    //important();
 
     //running Function
     runningFun(user.dice, combinationNames, user.combinations, AI.combinations, &user.index, &user.uScore, &user.lScore, AI.dice, &AI.uScore, &AI.lScore, user.name, AI.name, user.scoredScore, AI.scoredScore);
