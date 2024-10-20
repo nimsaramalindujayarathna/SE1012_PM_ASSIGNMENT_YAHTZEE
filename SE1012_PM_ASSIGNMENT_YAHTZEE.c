@@ -42,13 +42,8 @@
 #define ITALIC         "\033[3m"
 #define UNDERLINED     "\033[4m"
 #define BLINKING       "\033[5m"
-#define INVERTED       "\033[7m"
-#define HIDDEN         "\033[8m"
-#define STRIKETHROUGH  "\033[9m"
-//#define BRIGHT_CYAN_BG "\033[46m"
-#define HIGH_SCORE_TEXT "\033[1m\033[30m"  // Bold black text
-#define HIGH_SCORE_BG "\033[46m"
-//#define HIGH_SCORE_TEXT "\033[1m\033[37m"  // Bold white text
+#define HIGH_SCORE_TEXT "\033[1m\033[30m"  
+#define HIGH_SCORE_BG "\033[46m" 
 
 // Reset Code
 #define RESET "\033[0m"
@@ -362,14 +357,14 @@ void diceRoll(char *dices, int *combinationsArray, const char *com[]) {
                 break;
             }
             if (NoOfIndexes == 1) {
-                timer(800);
+                timer(400);
                 printf("Enter the index number of the dice reading you wanted keep. (1 to 5)\n");
             } else if (NoOfIndexes > 1){
-                timer(800);
+                timer(400);
                 printf("Enter the index numbers of the dice readings you wanted keep. (1 to 5)\n");
             }
             for (int ii = 1; ii < NoOfIndexes + 1; ii++){
-                timer(600);
+                timer(400);
                 printf("Enter the index number %d (1 to 5): ", ii );
                 while(1) {
                     if (scanf("%d", &indexes) != 1) {
@@ -545,7 +540,6 @@ void userIndex(char *dices, const char *com[], int *combinationArray,int *AIcomb
             } else if (combinationArray[i] == 1){
                 printf(DIM "\t\t%2d. %-16s %3d " RESET,(i+1),com[i], Score[i]);
                 printf(BOLD "%3d"RESET, n);
-                // printf("\t\t%21s %5d", spaces,Score[i]);
             }
             if (AIcombinationArray[i] == 0){
                 printf("\t |\t%2d. %-16s %3d ", (i+1), com[i], AIScore[i]);
@@ -554,7 +548,6 @@ void userIndex(char *dices, const char *com[], int *combinationArray,int *AIcomb
                 printf("\t |");
                 printf(DIM"\t%2d. %-16s %3d " RESET,(i+1),com[i], AIScore[i]);
                 printf(BOLD "%3d\n" RESET, AIn);
-                //printf("\t\t%21s %5d\n", spaces,AIScore[i]);
             }
         } else if (i == 12) {
             if (combinationArray[i] == 0){
@@ -563,7 +556,6 @@ void userIndex(char *dices, const char *com[], int *combinationArray,int *AIcomb
             } else if (combinationArray[i] == 1){
                 printf(DIM "\t\t%2d. %-16s %3d " RESET,(i+1),com[i], Score[i]);
                 printf(BOLD "%3d" RESET, o);
-                // printf("\t\t%21s %5d", spaces,Score[i]);
             }
             if (AIcombinationArray[i] == 0){
                 printf("\t |\t%2d. %-16s %3d ", (i+1), com[i], AIScore[i]);
@@ -572,14 +564,12 @@ void userIndex(char *dices, const char *com[], int *combinationArray,int *AIcomb
                 printf("\t |");
                 printf(DIM"\t%2d. %-16s %3d " RESET,(i+1),com[i], AIScore[i]);
                 printf(BOLD "%3d\n" RESET, AIo);
-                //printf("\t\t%21s %5d\n", spaces,AIScore[i]);
             }
         }else {
             if (combinationArray[i] == 0){
                 printf("\t\t%2d. %-16s %3d",(i+1),com[i],Score[i]);
             } else if (combinationArray[i] == 1){
                 printf(DIM "\t\t%2d. %-16s %3d " RESET,(i+1),com[i], Score[i]);
-                // printf("\t\t%21s %5d", spaces,Score[i]);
             }
             if (AIcombinationArray[i] == 0){
                 printf("\t |\t%2d. %-16s %3d\n", (i+1), com[i], AIScore[i]);
@@ -588,8 +578,7 @@ void userIndex(char *dices, const char *com[], int *combinationArray,int *AIcomb
                 printf(DIM"\t%2d. %-16s %3d \n" RESET,(i+1),com[i], AIScore[i]);
                 //printf("\t\t%21s %5d\n", spaces,AIScore[i]);
             }
-        }
-        
+        } 
     }
     timer(1200);
     printf(BOLD "\t\t    Current Total Score: %3d" RESET , o + n);
@@ -738,9 +727,7 @@ void runningFun(char *dices, const char *com[], int *combinationArray,int *AIcom
         AIcombinationArray[i] = 0;
     }
     for (int i = 0; i < 13; i++) {
-        printf(BOLD ITALIC"\n\n\n****************************************  Round No %d  ****************************************\n"RESET,i+1);                    
-        //printf("%20s   UPPER SECTION = %3d    LOWER SECTION = %3d     TOTAL SCORE = %3d\n",playerName ,sum1, sum2, sum1 + sum2 );
-        //printf("%20s   UPPER SECTION = %3d    LOWER SECTION = %3d     TOTAL SCORE = %3d\n",AIName, AIsum1, AIsum2, AIsum1 + AIsum2 );
+        printf(BOLD ITALIC"\n\n\n****************************************  Round No %d  ****************************************\n"RESET,i+1);    
         userIndex(dices,com ,combinationArray, AIcombinationArray, combinationIndexNumberPointer, playerName,AIName, Score, AIScore, 0, sum1, sum2, AIsum1, AIsum2);
         printf(DIM"---------------------------------------------------------------------------------------------\n"RESET);
         diceReadings(AIdices);
@@ -777,7 +764,6 @@ void runningFun(char *dices, const char *com[], int *combinationArray,int *AIcom
         timer(500);
         AIscoreForCombination(AIdices, AIIndexNum + 1, &AItempscore, AIName);
         timer(1000);
-        //printf("---------------------------------------------------------------------------------------------\n\n");
         if (AIIndexNum+1 < 7) {
             AIsum1 = AIsum1 + AItempscore;
         } else {
@@ -811,7 +797,7 @@ void printScoresForUser(char *dices, int *combinationsArray, const char *com[]) 
     }
     for (int i = 0; i < 13; i++) {
         if (combinationsArray[i] == 0){
-            if(sscores[i] == maxScore) {
+            if((sscores[i] == maxScore)  && (!(maxScore == 0))) {
                 timer(250);
                 printf("\t\t  ");
                 printf(HIGH_SCORE_BG HIGH_SCORE_TEXT"%2d. %-16s %2d"RESET, i+1, com[i], sscores[i]);
@@ -1070,7 +1056,7 @@ void AINumbers (char *dices, int index, int roll) {
 }
 
 
-//other mini functions used for the input validation of the game
+//other mini functions used for the input validation of the game and delays
 void clearInputs() {
     // this function is used to get the inputs in the correct data type.
     int input;
@@ -1092,14 +1078,14 @@ int main() {
     players AI;
 
     //instructions to play 
-    //instruct();
+    instruct();
 
     // input the names of the players
-    //playerName(user.name);
-    //AIName(AI.name);
+    playerName(user.name);
+    AIName(AI.name);
 
     //important information how the games should be played
-    //important();
+    important();
 
     //running Function
     runningFun(user.dice, combinationNames, user.combinations, AI.combinations, &user.index, &user.uScore, &user.lScore, AI.dice, &AI.uScore, &AI.lScore, user.name, AI.name, user.scoredScore, AI.scoredScore);
@@ -1112,5 +1098,3 @@ int main() {
     winner(user.total, AI.total, user.name, AI.name);
     return 0;
 }
-
-
