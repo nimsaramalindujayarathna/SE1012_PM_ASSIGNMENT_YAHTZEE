@@ -178,7 +178,7 @@ void winner(int userFinal, int AIFinal, char *playerName, char *AIName) {
     if(userFinal < AIFinal){
         printf(BOLD MAGENTA"You tried your best but %s is just better."RESET, AIName);
     } else if(userFinal > AIFinal) {
-        printf(BOLD CYAN"Congratulations, %s have won the game"RESET, playerName);
+        printf(BOLD CYAN"Congratulations, %s you have won the game"RESET, playerName);
     } else if(userFinal == AIFinal) {
         printf(BOLD ITALIC BLUE"IT'S a DRAW!!!"RESET);
     }
@@ -267,6 +267,9 @@ void printDice(char *dices, int lineBreak, int color, int time){
     //this function will print the dice readings of the string that passes as the dices pointer. 
     //if the linebreak value is one when calling the function prints a linebreak when printing the dice readings
     //if the linebreak value is zero when calling the function, just print the dice readings
+    //time parameter is used to place a delay in print ing each dice reading. use 1 as argument if needde, if not need use 0 as argument.
+    //color argumenet is placed so that the dice reading colors are assigned occrding to the argument 1 if the dice readings is a Ai(magenta color)
+    // 0 if dice readings are from human player (cyan color)
     if (lineBreak == 1){
         printf("\n");
     }
@@ -309,9 +312,9 @@ void diceRoll(char *dices, int *combinationsArray, const char *com[]) {
     int NoOfIndexes; // no of the indexes to keep
     char inputChar; 
     int i = 0;
-    timer(1000);
-    printf(ITALIC BOLD"\n\tRoll NO (%d) >>>> " RESET ,i+1);// this selection print the roll no
-    timer(500);
+    printf("\n\t");
+    timer(750);
+    printf(ITALIC BOLD"Roll NO (%d) >>>> " RESET ,i+1);// this selection print the roll no
     diceReadings(dices); //Inital dice roll
     printDice(dices, 0, 0, 1); //Inital deice reads displayed
     printScoresForUser(dices, combinationsArray, com);
@@ -339,7 +342,7 @@ void diceRoll(char *dices, int *combinationsArray, const char *com[]) {
                 tempDices[j] = dices[j]; //store the main array data to temp array to roll the dices again, while the values in the temp arrary are used to do the execution
             }
             diceReadings(dices); // next dice rolls. actually the programm roll the dice and store it in a temp array before asking the user what to do with the previous dice readings.
-            timer(500);
+            timer(275);
             printf("Enter how many dice readings you want to keep before the next roll : ");
             //input validation ---- NoofIndexes
             while(1) {
@@ -357,14 +360,14 @@ void diceRoll(char *dices, int *combinationsArray, const char *com[]) {
                 break;
             }
             if (NoOfIndexes == 1) {
-                timer(400);
+                timer(275);
                 printf("Enter the index number of the dice reading you wanted keep. (1 to 5)\n");
             } else if (NoOfIndexes > 1){
-                timer(400);
+                timer(275);
                 printf("Enter the index numbers of the dice readings you wanted keep. (1 to 5)\n");
             }
             for (int ii = 1; ii < NoOfIndexes + 1; ii++){
-                timer(400);
+                timer(275);
                 printf("Enter the index number %d (1 to 5): ", ii );
                 while(1) {
                     if (scanf("%d", &indexes) != 1) {
@@ -387,9 +390,12 @@ void diceRoll(char *dices, int *combinationsArray, const char *com[]) {
                 indexCheckArray[indexes -1] = 1;
                 dices[indexes - 1] = tempDices[indexes - 1 ]; // the main array store the next roll data and occording to the indexes the values decided keep are assigned into the newly rolled main array
             }
-            timer(1000); 
-            printf(BOLD ITALIC"\n\n\tRoll NO (%d) >>>> "RESET,i+2);
-            timer(500); 
+            printf("\n\n\t");
+            timer(750);
+            printf(ITALIC BOLD"Roll NO (%d) >>>> " RESET ,i+2);// this selection print the roll no
+            // timer(1000); 
+            // printf(BOLD ITALIC"\n\n\tRoll NO (%d) >>>> "RESET,i+2);
+            // timer(600); 
             if (NoOfIndexes != 0) {
                 clearInputs();
             }
@@ -732,22 +738,22 @@ void runningFun(char *dices, const char *com[], int *combinationArray,int *AIcom
         printf(DIM"---------------------------------------------------------------------------------------------\n"RESET);
         diceReadings(AIdices);
         printf("\n\t");
-        printf(BOLD UNDERLINED"%s's dice readings\n"RESET,AIName);
-        timer(1000);
+        printf(BOLD UNDERLINED"%s's dice readings\n\n"RESET,AIName);
+        timer(750);
         printf(BOLD ITALIC"\tRoll NO (1) - "RESET);
-        timer(500);
+        timer(250);
         printDice(AIdices, 0, 1, 1);
         AIIndex(AIdices, AIcombinationArray, &AIIndexNum );
         printf(DIM"\n---------------------------------------------------------------------------------------------"RESET);
         printf(BOLD ITALIC"\n\n\t%s's Final "RESET,playerName);
-        timer(500);
+        timer(425);
         printDice(dices, 0, 0, 0);
         printf("\tCombination Type : " );
         timer(350);
         printf(BOLD CYAN"%-16s\t"RESET ,com[*combinationIndexNumberPointer - 1]);
-        timer(500);
+        timer(425);
         scoreForCombination(dices, combinationIndexNumberPointer, &tempscore, playerName);
-        timer(1000);
+        timer(500);
         if (*combinationIndexNumberPointer < 7) {
             sum1 = sum1 + tempscore;
         } else {
@@ -756,14 +762,14 @@ void runningFun(char *dices, const char *com[], int *combinationArray,int *AIcom
         playerIndex = *combinationIndexNumberPointer;
         Score[playerIndex - 1] = tempscore;
         printf(BOLD ITALIC"\n\t%s's Final "RESET,AIName);
-        timer(500);
+        timer(425);
         printDice(AIdices, 0, 1, 0);
         printf("\tCombination Type : ");
         timer(350);
         printf(BOLD MAGENTA"%-16s\t"RESET, com[AIIndexNum]);
-        timer(500);
+        timer(425);
         AIscoreForCombination(AIdices, AIIndexNum + 1, &AItempscore, AIName);
-        timer(1000);
+        timer(500);
         if (AIIndexNum+1 < 7) {
             AIsum1 = AIsum1 + AItempscore;
         } else {
@@ -798,12 +804,12 @@ void printScoresForUser(char *dices, int *combinationsArray, const char *com[]) 
     for (int i = 0; i < 13; i++) {
         if (combinationsArray[i] == 0){
             if((sscores[i] == maxScore)  && (!(maxScore == 0))) {
-                timer(250);
+                timer(125);
                 printf("\t\t  ");
                 printf(HIGH_SCORE_BG HIGH_SCORE_TEXT"%2d. %-16s %2d"RESET, i+1, com[i], sscores[i]);
                 printf("\n");
             } else {
-                timer(250);
+                timer(125);
                 printf("\t\t  %2d. %-16s %2d\n", i+1, com[i], sscores[i]);
             }
         }
@@ -881,16 +887,16 @@ void AIIndex(char *dices, int *comArray, int *AIIndex) {
                     switch (l) {
                         case 0:
                             diceReadings(dices);
-                            timer(1000);
+                            timer(750);
                             printf(BOLD ITALIC"\tRoll NO (2) - "RESET);
-                            timer(500);
+                            timer(250);
                             printDice(dices,0, 1, 1);
                             break;
                         case 1:
                             diceReadings(dices);
-                            timer(1000);
+                            timer(750);
                             printf(BOLD ITALIC"\tRoll NO (3) - "RESET);
-                            timer(500);
+                            timer(250);
                             printDice(dices,0, 1, 1);
                             break;
                         default:
@@ -973,15 +979,15 @@ void diceRollWithSingleIndex(char*dices, int index, int roll) {
     }
     switch (roll) {
         case 0:
-            timer(1000);
+            timer(750);
             printf(BOLD ITALIC"\tRoll NO (2) - "RESET);
-            timer(500);
+            timer(250);
             printDice(dices, 0, 1, 1);
             break;
         case 1:
-            timer(1000);
+            timer(750);
             printf(BOLD ITALIC"\tRoll NO (3) - "RESET);
-            timer(500);
+            timer(250);
             printDice(dices, 0, 1, 1);
             break;
         default:
@@ -1005,15 +1011,15 @@ void diceRollWithDoubleIndex(char*dices, int index1, int index2, int roll) {
     }
     switch (roll) {
         case 0:
-            timer(1000);
+            timer(750);
             printf(BOLD ITALIC"\tRoll NO (2) - "RESET);
-            timer(500);
+            timer(250);
             printDice(dices, 0, 1, 1);
             break;
         case 1:
-            timer(1000);
+            timer(750);
             printf(BOLD ITALIC"\tRoll NO (3) - "RESET);
-            timer(500);
+            timer(250);
             printDice(dices, 0, 1, 1);
             break;
         default:
