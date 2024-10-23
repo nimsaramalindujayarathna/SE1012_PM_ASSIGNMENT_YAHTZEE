@@ -1178,32 +1178,69 @@ void timer(int time) {
 void statistics(char *dices, const char *com[], int *combinationArray,int *AIcombinationArray, int *combinationIndexNumberPointer, int *nScore, int *oScore, char *AIdices, int *AInScore, int *AIoScore, char *playerName, char *AIName, int *Score, int*AIScore) {
     //this function is specifically designed to runn the game only for the AI  as much as reuired amount of rounds in order to get the stats on how the AI scores.
     // this function will print the average scores and the percentage which the bonus were abotained by th AI
-    int upper = 0;
-    int lower = 0;
-    float bonus = 0;
-    int total = 0;
-    float y = 0;
-    float loop;
+    int loop;
+    int scorecut;
+    int interval;
+    int cutoff[100];
+    float result[100];
+    float percentageresult[100];
+    int count = 0;
     printf("Enter amount of loops: ");
-    scanf("%f", &loop);
-    for (int i = 0; i < loop; i++){
-        runningFun(dices,com,combinationArray,AIcombinationArray,combinationIndexNumberPointer,nScore,oScore,AIdices,AInScore,AIoScore,playerName,AIName,Score, AIScore);
-        upper += *AInScore;
-        lower += *AIoScore;
-        total += *AInScore + *AIoScore;
-        if(*AInScore > 63) {
-            bonus++;
+    scanf("%d", &loop);
+    float loopnum = loop;
+    printf("Enter score cut off: ");
+    scanf("%d", &scorecut);
+    printf("Enter interval: ");
+    scanf("%d", &interval);
+    for(; scorecut > 0; scorecut-=interval){ //skips the intialization of the variable for the for loop becuase scorecount is already intialized.
+        int upper = 0;
+        int lower = 0;
+        float bonus = 0;
+        int total = 0;
+        int highscore = 0;
+        int lowerscore = 10000;
+        int sum = 0;
+        float cutcount = 0;
+        for (int ii = 0; ii < loop; ii++){
+            runningFun(dices,com,combinationArray,AIcombinationArray,combinationIndexNumberPointer,nScore,oScore,AIdices,AInScore,AIoScore,playerName,AIName,Score, AIScore);
+            upper += *AInScore;
+            lower += *AIoScore;
+            sum = *AInScore + *AIoScore;
+            total += sum;
+            if(*AInScore > 63) {
+                bonus++;
+            }
+            if(scorecut <= sum) {
+                cutcount++;
+            }
+            if(highscore < sum) {
+                highscore = sum;
+            }
+            if(lowerscore > sum) {
+                lowerscore = sum;
+            }
         }
+        float avgupper = upper / loopnum;
+        float avglower = lower / loopnum;
+        float avgtotal = total / loopnum;
+        float avgbonus = bonus / loopnum;
+        float percentage = bonus / loopnum * 100;
+        float cutpercentage = cutcount / loopnum * 100;
+        printf("Total of upper scores is %4d for %5.0f simulations. Average of uppers score is  %7.2f\n", upper, loopnum, avgupper);
+        printf("Total of lower scores is %4d for %5.0f simulations. Average of lower score is  %7.2f\n", lower, loopnum, avglower);
+        printf("Total of total scores is %4d for %5.0f simulations. Average of total score is  %7.2f\n", total, loopnum, avgtotal);
+        printf("Number of bonuses are  %3.0f,    Bonus Percentage is  %5.2f\n\n",bonus, percentage );
+        printf("Number of total score above %3.0d are  %3.0f,    Above Percentage is  %5.2f\n", scorecut, cutcount, cutpercentage );
+        printf("Highest Score is %d\n\n", highscore );
+        printf("Lowest Score is %d\n\n", lowerscore );
+        cutoff[count] = scorecut;
+        result[count] = cutcount;
+        percentageresult[count] = cutpercentage;
+        count++;
     }
-    float avgupper = upper / loop;
-    float avglower = lower / loop;
-    float avgtotal = total / loop;
-    float avgbonus = bonus / loop;
-    float percentage = bonus / loop * 100;
-    printf("Total of upper scores is %4d for %5.0f simulations. Average of uppers score is  %7.2f\n", upper, loop, avgupper);
-    printf("Total of lower scores is %4d for %5.0f simulations. Average of lower score is  %7.2f\n", lower, loop, avglower);
-    printf("Total of total scores is %4d for %5.0f simulations. Average of total score is  %7.2f\n", total, loop, avgtotal);
-    printf("Number of bonuses are  %3.0f,    Bonus Percentage is  %5.2f\n\n",bonus, percentage );
+    for (int i = 0; i < count; i++) {
+        printf("Cutoff Score is %3d,\tCutoff Count is %3.0f,\tCutoff Percentage is %5.2f\n", cutoff[i], result[i], percentageresult[i]);
+    }
 }
 
 int main() {
@@ -1233,7 +1270,7 @@ int main() {
     //choosing the winner
     //winner(user.total, AI.total, user.name, AI.name);
 
-
+    //statistics
     statistics(user.dice, combinationNames, user.combinations, AI.combinations, &user.index, &user.uScore, &user.lScore, AI.dice, &AI.uScore, &AI.lScore, user.name, AI.name, user.scoredScore, AI.scoredScore);
     
 
