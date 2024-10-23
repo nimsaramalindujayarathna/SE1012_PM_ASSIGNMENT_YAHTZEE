@@ -98,7 +98,8 @@ void scoreForCombination(char *dices, int *combination, int *score, char *name);
 void AIscoreForCombination(char *dices, int combinationNum, int *score, char *name);
 void userIndex(char *dices, const char *com[], int *combinationArray,int *AIcombinationArray, int *combinationIndexNumber, char *name, char *AIname, int *Score, int*AIScore, int check, int n, int o, int AIn, int AIo);
 void runningFun(char *dices, const char *com[], int *combinationArray,int *AIcombinationArray, int *combinationIndexNumberPointer, int *nScore, int *oScore, char *AIdices, int *AInScore, int *AIoScore, char *playerName, char *AIName, int *Score, int *AIScore);
-
+void statistics(char *dices, const char *com[], int *combinationArray,int *AIcombinationArray, int *combinationIndexNumberPointer, int *nScore, int *oScore, char *AIdices, int *AInScore, int *AIoScore, char *playerName, char *AIName, int *Score, int*AIScore);
+ 
 
 ////////FUNCTIONS DECLRATIONS
 
@@ -812,7 +813,7 @@ void runningFun(char *dices, const char *com[], int *combinationArray,int *AIcom
     } //zeroing the comabination arrays and scores arrays.
     for (int i = 0; i < 13; i++) {
         printf(BOLD ITALIC"\n\n\n****************************************  Round No %d  ****************************************\n"RESET,i+1);    //print the rpund number
-        userIndex(dices,com ,combinationArray, AIcombinationArray, combinationIndexNumberPointer, playerName,AIName, Score, AIScore, 0, sum1, sum2, AIsum1, AIsum2);
+        //userIndex(dices,com ,combinationArray, AIcombinationArray, combinationIndexNumberPointer, playerName,AIName, Score, AIScore, 0, sum1, sum2, AIsum1, AIsum2);
         //this runs the dice rolls and enterint the combination number
         printf(DIM"---------------------------------------------------------------------------------------------\n"RESET);
         diceReadings(AIdices); // intial roll of Ai's dices
@@ -926,18 +927,22 @@ void AIIndex(char *dices, int *comArray, int *AIIndex, int roundNo) {
         if (l < 2){ //check if there are any left rolls for the AI
             if(comArray[12] == 0 || comArray[6] == 0 || comArray[7] == 0) {
                 if (sortNumber == 3) { //if there are same 3 dice readings using the below function the dices will be rolled again to obtain more same dice readings
+                    printf("Entering 3s");
                     AISingleRollAgain(dices, 6, l);
                     continue;
                 }
                 if (sortNumber == 4) { //if there are same 4 dice readings using the below function the dices will be rolled again to obtain more same dice readings
+                    printf("Entering 4s");
                     AISingleRollAgain(dices, 7, l);
                     continue;
                 }
             }
             if (index < 6) { // if the sleceted combination is a upper combination the dices are rolled again in order to obatain more of the same dice readings.
+                printf("Entering number- %d", index+1);
                 AINumbers(dices, index, l);
                 continue;
             }if (roundNo >= 11 && comArray[11] == 0) { 
+                printf("Entering chances");
                 // this condtions runs when the round number is 12 or 13 and the chances combinations is not yet checked.
                 //this code will find the maximum available dice value and roll the dices keeping that value.
                 index = 11;
@@ -954,6 +959,7 @@ void AIIndex(char *dices, int *comArray, int *AIIndex, int roundNo) {
             if (roundNo == 12 && comArray[12] == 0) {
                 //this if contions only runs if the yahtzee combination is not yet assigned.
                 //from this the code selectes the most available dice readings and rolling the dice reading keeping that value.
+                printf("Entering Yahtzee");
                 index = 12;
                 int tempo = 0;
                 int maxi,indexi;
@@ -968,6 +974,7 @@ void AIIndex(char *dices, int *comArray, int *AIIndex, int roundNo) {
         }
         if (index == 99) { // if the index is not assigned after executing above code(this happens if the maximum score is not assigned)
         // zero for all the combintaions. assign the next available combination.
+            printf("Entering 99");
             for (int i = 0; i < 13; i++) {
                 if (comArray[i] == 0) {
                     index = i;
@@ -993,6 +1000,10 @@ void AIIndex(char *dices, int *comArray, int *AIIndex, int roundNo) {
                 }
             }
         }
+    }
+    if ((scores[index] == 0) && (comArray[11] == 0)){
+        printf("Entering chances if 0");
+        index = 11;
     }
     end1:
     comArray[index] = 1; // removing the selected combination 
@@ -1164,7 +1175,36 @@ void timer(int time) {
     usleep(time * 1000);
 }
 
-
+void statistics(char *dices, const char *com[], int *combinationArray,int *AIcombinationArray, int *combinationIndexNumberPointer, int *nScore, int *oScore, char *AIdices, int *AInScore, int *AIoScore, char *playerName, char *AIName, int *Score, int*AIScore) {
+    //this function is specifically designed to runn the game only for the AI  as much as reuired amount of rounds in order to get the stats on how the AI scores.
+    // this function will print the average scores and the percentage which the bonus were abotained by th AI
+    int upper = 0;
+    int lower = 0;
+    float bonus = 0;
+    int total = 0;
+    float y = 0;
+    float loop;
+    printf("Enter amount of loops: ");
+    scanf("%f", &loop);
+    for (int i = 0; i < loop; i++){
+        runningFun(dices,com,combinationArray,AIcombinationArray,combinationIndexNumberPointer,nScore,oScore,AIdices,AInScore,AIoScore,playerName,AIName,Score, AIScore);
+        upper += *AInScore;
+        lower += *AIoScore;
+        total += *AInScore + *AIoScore;
+        if(*AInScore > 63) {
+            bonus++;
+        }
+    }
+    float avgupper = upper / loop;
+    float avglower = lower / loop;
+    float avgtotal = total / loop;
+    float avgbonus = bonus / loop;
+    float percentage = bonus / loop * 100;
+    printf("Total of upper scores is %4d for %5.0f simulations. Average of uppers score is  %7.2f\n", upper, loop, avgupper);
+    printf("Total of lower scores is %4d for %5.0f simulations. Average of lower score is  %7.2f\n", lower, loop, avglower);
+    printf("Total of total scores is %4d for %5.0f simulations. Average of total score is  %7.2f\n", total, loop, avgtotal);
+    printf("Number of bonuses are  %3.0f,    Bonus Percentage is  %5.2f\n\n",bonus, percentage );
+}
 
 int main() {
     srand(time(0));// only call once. this will generate random numbers compared to the time in seconds. this will remove the squential random number ger=neration.
@@ -1184,14 +1224,18 @@ int main() {
     //important();
 
     //running Function
-    runningFun(user.dice, combinationNames, user.combinations, AI.combinations, &user.index, &user.uScore, &user.lScore, AI.dice, &AI.uScore, &AI.lScore, user.name, AI.name, user.scoredScore, AI.scoredScore);
+    //runningFun(user.dice, combinationNames, user.combinations, AI.combinations, &user.index, &user.uScore, &user.lScore, AI.dice, &AI.uScore, &AI.lScore, user.name, AI.name, user.scoredScore, AI.scoredScore);
     
     //display final Score
-    scoreDisplay(user.name, user.uScore, user.lScore, &user.total, 0);
-    scoreDisplay(AI.name, AI.uScore, AI.lScore, &AI.total, 1);
+    //scoreDisplay(user.name, user.uScore, user.lScore, &user.total, 0);
+    //scoreDisplay(AI.name, AI.uScore, AI.lScore, &AI.total, 1);
 
     //choosing the winner
-    winner(user.total, AI.total, user.name, AI.name);
+    //winner(user.total, AI.total, user.name, AI.name);
+
+
+    statistics(user.dice, combinationNames, user.combinations, AI.combinations, &user.index, &user.uScore, &user.lScore, AI.dice, &AI.uScore, &AI.lScore, user.name, AI.name, user.scoredScore, AI.scoredScore);
+    
 
     return 0;
 }
