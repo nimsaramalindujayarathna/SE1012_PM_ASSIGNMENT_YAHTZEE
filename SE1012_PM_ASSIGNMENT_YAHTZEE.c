@@ -75,20 +75,23 @@ int fourOfaKind(char *dices);
 int threeOfaKind(char *dices);
 int largeStraight(char *dices);
 int smallStraight(char *dices);
-void timer(int time);
 void next();
 void instruct();
 void important();
 void clearInputs();
+void timer(int time);
 void AIName(char *name);
 void editName(char *name);
 void playerName(char *name);
 void diceReadings(char *dices);
-void AINumbers (char *dices, int index, int roll);
-void AISingleRollAgain(char *dices, int index, int roll);
+void smallToLarge (char *dices, int roll);
+void AINumbers(char *dices, int index, int roll);
+void AIDiceRoll(char *dices, int index, int roll);
+void diceToSmall (char*dices, int roll, int *checkValue);
 void AIscoreCal(char *dices, int combinationNum, int *score);
 void diceRollWithSingleIndex(char*dices, int index, int roll);
 void printDice(char *dices, int lineBreak, int color, int time);
+void smallRoll (char*dices, int roll, int num1, int num2, int num3);
 void AIIndex(char *dices, int *comArray, int *AIIndex, int roundNo);
 void winner(int userFinal, int AIFinal, char *playerName, char *AIName);
 void diceRollWithDoubleIndex(char*dices, int index1, int index2, int roll);
@@ -881,14 +884,13 @@ void AIIndex(char *dices, int *comArray, int *AIIndex, int roundNo) {
     // this function will choose the best combination out of the available combinations by comparing the scores for each combination
     // also inside this function fi there are 3same dice reading they rolled agan in order to obtain a four of akind or a yahtzee, vi versa for the 4 same dices redaings.
     int scores[] = {0,0,0,0,0,0,0,0,0,0,0,0,0};
-    int index = 99;//a deafult assigned value to check after the function exceute to check if this variable was changed after the execution
+    int index;//a deafult assigned value to check after the function exceute to check if this variable was changed after the execution
     int scorecheck = 0;
     int sortNumber = 0;
     int chancesVariable = 0;
+    int checkNumber = 0;
     for (int l = 0; l < 3; l++) {// round number for the Ai
-        if (l > 0) {
-            index = 99;
-        }
+        index = 99;//a deafult assigned value to check if it changes  after the below statement execution
         int sortedArray[] = {0, 0, 0, 0, 0, 0}; 
         for (int i = 0; i < 5; i++) { 
         // this will sort the dice readings checking the how many 1-6 numbers are available
@@ -913,9 +915,14 @@ void AIIndex(char *dices, int *comArray, int *AIIndex, int roundNo) {
                     temp = scores[i];
                     index = i;
                     if (i == 12) { //prioritising the yahtzee and full house combinations.
+                        // if ((comArray[5] == 0) && (dices[1] == 6)) {
+                        //     // this condition set the Ai choosen index to sixes if the dices were all containsing 6's
+                        //     //this will stop the dice readings from assiging to yahtzee
+                        //     index = 5;
+                        // }
                         goto end1;
                     }
-                    if (i == 8) {
+                    if (i == 8) { // break fullhouse
                         goto end1;
                     }
                 } else if (temp == scores[i] && (i == 6 || i == 7)) { //when checking the highest score if there are same score for 
@@ -924,29 +931,51 @@ void AIIndex(char *dices, int *comArray, int *AIIndex, int roundNo) {
                 }
             }
         }
-        if (((index == 9) || (index == 10))) {
-            if (scores[index] != 0) {
-                goto end1; // skip if the best is a lower combinations and a yhtzee
-            }  
+        if ((index == 10) && (scores[index] != 0)) { //this condition is placed here to stop further checks if the dice have scored for the largeStraight
+            goto end1;
+        }
+        if ((index == 9) && (comArray[10] == 1)) { //this condition is placed here to stop further checks and pass the combination as small straight if the large staright combination already scored.
+            goto end1; 
         }
         if (l < 2){ //check if there are any left rolls for the AI
+            if ((index == 9) && (comArray[10] == 0)) { 
+                //if the large straight combination is not scored yet and the diecs have a small straight 
+                // then the dices will be rolled again in order to obtain a large straight.
+                smallToLarge(dices, l);
+                continue;
+            }
             if(comArray[12] == 0 || comArray[6] == 0 || comArray[7] == 0) {
                 if (sortNumber == 3) { //if there are same 3 dice readings using the below function the dices will be rolled again to obtain more same dice readings
                     //printf("Entering 3s");
-                    AISingleRollAgain(dices, 6, l);
+                    AIDiceRoll(dices, 6, l);
                     continue;
                 }
                 if (sortNumber == 4) { //if there are same 4 dice readings using the below function the dices will be rolled again to obtain more same dice readings
                     //printf("Entering 4s");
-                    AISingleRollAgain(dices, 7, l);
+                    AIDiceRoll(dices, 7, l);
                     continue;
                 }
             }
             if (index < 6) { // if the sleceted combination is a upper combination the dices are rolled again in order to obatain more of the same dice readings.
                 //printf("Entering number- %d", index+1);
-                AINumbers(dices, index, l);
+                checkNumber = 0;
+                if ((comArray[9] == 0) && (l == 0)) { //checks if smal straight is not yet used and there are 2 remaining rolls left
+                    int localCheck = 0;
+                    for (int i = 0; i < 6; i++) { 
+                        if ((sortedArray[i] > 1) && comArray[i] == 0) { // use sorted array to check if there are 2 or more same readings and the respective number is not yet assigned
+                            localCheck = 1;//this will stop executing the diceToSmall function.
+                        }
+                    }
+                    if (localCheck == 0) {
+                        diceToSmall(dices,  l, &checkNumber); // this function will try to obtain a small straight if  the dices have a chance of obtaining it after a roll
+                    }
+                }
+                if (checkNumber == 0) { // roll the numbers
+                    AINumbers(dices, index, l);
+                }
                 continue;
-            }if (roundNo >= 11 && comArray[11] == 0) { 
+            }
+            if (roundNo >= 11 && comArray[11] == 0) { //chances in the end
                 //printf("Entering chances");
                 // this condtions runs when the round number is 12 or 13 and the chances combinations is not yet checked.
                 //this code will find the maximum available dice value and roll the dices keeping that value.
@@ -961,7 +990,7 @@ void AIIndex(char *dices, int *comArray, int *AIIndex, int roundNo) {
                 }
                 AINumbers(dices, chancesVariable, l);
             }
-            if (roundNo == 12 && comArray[12] == 0) {
+            if (roundNo == 12 && comArray[12] == 0) { //yahtzee at the last
                 //this if contions only runs if the yahtzee combination is not yet assigned.
                 //from this the code selectes the most available dice readings and rolling the dice reading keeping that value.
                 //printf("Entering Yahtzee");
@@ -1010,12 +1039,31 @@ void AIIndex(char *dices, int *comArray, int *AIIndex, int roundNo) {
         //printf("Entering chances if 0");
         index = 11;
     }
+    if (index == 7)  { 
+        int sortedArray[] = {0, 0, 0, 0, 0, 0}; 
+        int diceof4;
+        for (int i = 0; i < 5; i++) { 
+        // this will sort the dice readings checking the how many 1-6 numbers are available
+        /*if the dice readings were[3 4 2 4 5], then the sotedarray[] value will be this [0,1,1,2,1,0]*/
+            sortedArray[dices[i] - 1]++ ;
+        }
+        for (int i = 0; i < 6; i++) { 
+            if(sortedArray[i] == 4) {
+                diceof4 = i + 1;
+            }
+        }
+        if ((comArray[5] == 0) && (diceof4 == 6)) {
+            // this condition set the Ai choosen index to sixes if the dices were all containsing 6's
+            //this will stop the dice readings from assiging to yahtzee
+            index = 5;
+        }
+    }
     end1:
     comArray[index] = 1; // removing the selected combination 
     *AIIndex = index;  //assigning the  selected combination index.
 }
 
-void AISingleRollAgain(char *dices, int index, int roll) {
+void AIDiceRoll(char *dices, int index, int roll) {
     // this function is designed to roll the Ai dice reaings, if only one dice is needed to be rolled.
     // parameteres are the AI dices index which the dice reaings should roll, and the roll no to display
     // if the index is 6 it will run the singleindex function which can only roll 1 dice.
@@ -1165,6 +1213,113 @@ void AINumbers (char *dices, int index, int roll) {
     }
 }
 
+void smallToLarge (char *dices, int roll) {
+    //this function will roll the dices again in order to obtain a large straight if the dices already have a small straight.
+    // parameters are the dices and the current roll number of the AI   
+    int thereIsTwo = 0;
+    int valueTwo;
+    int rollValue;
+    int index;
+    int sortedArray[] = {0, 0, 0, 0, 0, 0}; 
+    for (int i = 0; i < 5; i++) { 
+    // this will sort the dice readings checking the how many 1-6 numbers are available
+    /*if the dice readings were[3 4 2 4 5], then the sotedarray[] value will be this [0,1,1,2,1,0]*/
+        sortedArray[dices[i] - 1]++ ;
+    }
+    for (int i = 0; i < 6; i++) { //using the sorted dice readings check whethere if there are any repeated dice readings.
+    //if there are 2 same readings, there is a chance in obtaining large straight if one of those dice was rolled
+        if(sortedArray[i] == 2){
+            thereIsTwo  = 1;
+            valueTwo = i + 1;
+        }
+    }
+    if (thereIsTwo == 0){
+        //if there is no same readings, there is only 1,2,3,4 or 3,4,5,6 small straights
+        //if its a 1,2,3,4 the other reading will be 6, vis versa 3,4,5,6 the other reading will be 1 
+        for (int i = 0; i < 5; i++) { 
+            //find which type of a small straight from the above 2
+            if (dices[i] == 2) {
+                rollValue = 6;
+            } else if(dices[i] == 5) {
+                rollValue = 1;
+            }
+        }
+        for (int i = 0; i < 5; i++) { 
+            //after finding that value find the respective index of that reading
+            if ((rollValue == 1) && (dices[i] == 1)) {
+                index = i;
+            } 
+            if ((rollValue == 6) && (dices[i] == 6)) {
+                index = i;
+            }
+        }
+        diceRollWithSingleIndex(dices, index, roll); // roll the index of that value
+    } else if (thereIsTwo == 1) { // if there are 2 repeated dice readings roll one of those repeated dices in order to obtain a large straight.
+        for (int i = 0; i < 5; i++) { 
+            if (valueTwo == dices[i]) {
+                index = i;
+            }
+        }
+        diceRollWithSingleIndex(dices, index, roll);// roll the one of index from the same dices.
+    }
+}
+
+void diceToSmall (char*dices, int roll, int *checkValue) {
+    //this function is used to check if there is any chance to obtain a small straight from the current dices after a roll.
+    //check whethere the dices have 3 consecative readings.
+    // if there are 3 consecative readings it will run the respective index to roll
+    int temp1 = 0;
+    int temp2 = 0;
+    int temp3 = 0;
+    int condition; 
+    int indexs[2];
+    int index = 0;
+    *checkValue = 1;
+    int array[] = {0, 0, 0, 0, 0, 0};
+    for (int i = 0; i < 5; i++) {
+        array[dices[i] - 1]++ ;
+    }
+    if(array[0] >= 1 && array[1] >= 1 && array[2] >= 1) { //check 1,2,3
+        smallRoll (dices, roll, 1, 2, 3);
+    } else if (array[1] >= 1 && array[2] >= 1 && array[3] >= 1) { //check 2,3,4
+        smallRoll (dices, roll, 2, 3, 4);
+    } else if (array[2] >= 1 && array[3] >= 1 && array[4] >= 1) { //check 3,4,5
+        smallRoll (dices, roll, 3, 4, 5);
+    } else if (array[3] >= 1 && array[4] >= 1 && array[5] >= 1) { //check 4,5,6
+        smallRoll (dices, roll, 4, 5, 6);
+    } else {
+        *checkValue = 0;
+        return;
+    }
+
+}
+
+void smallRoll (char*dices, int roll, int num1, int num2, int num3) {
+    // this function is designed to roll the dices in order to obatin a small straight 
+    // the 2 dices that are needed to be rolled in order to obatin a smalls straight will be found after after executing this and 
+    // the 2 indexes will passed as parameters in the diceRollWithDouble Index function
+    int temp1 = 0;
+    int temp2 = 0;
+    int temp3 = 0;
+    int indexs[2];
+    int index = 0;
+    for (int i = 0; i < 5; i++) {
+            if ((dices[i] == num1) && (temp1 == 0)){
+                temp1 = 1;
+            }else if ((dices[i] == num2) && (temp2 == 0)){
+                temp2 = 1;
+            }else if ((dices[i] == num3) && (temp3 == 0)){
+                temp3 = 1;
+            } else {
+                indexs[index++] = i;
+            }
+        }
+        printf("%d, %d, %d\n", num1, num2, num3);
+        printf("Index 1:%d\tIndex 2:%d\n",indexs[0],indexs[1]);
+        diceRollWithDoubleIndex(dices, indexs[0], indexs[1], roll);
+        printDice(dices, 0, 1, 0);
+}
+
 
 //other mini functions used for the input validation of the game and delays
 void clearInputs() {
@@ -1179,6 +1334,7 @@ void timer(int time) {
     fflush(stdout);
     usleep(time * 1000);
 }
+
 
 //find the AI's Statistics
 void statistics(const char *com[],int *AIcombinationArray, char *AIdices, int *AInScore, int *AIoScore,  int*AIScore) {
@@ -1211,18 +1367,16 @@ void statistics(const char *com[],int *AIcombinationArray, char *AIdices, int *A
             if (i < 6 || i == 11){
                 avgscores[i] = scores[i] / loopnum;
             } else {
-                if (AIScore[i] > 0){
-                    avgscores[i] = scores[i] / loopnum * 100;
-                }
+                avgscores[i] = (scores[i] / loopnum) * 100;
             }
         }
-        printf("Aveage for Ones     %5.2f\n",avgscores[0]);
-        printf("Aveage for Twos     %5.2f\n",avgscores[1]);
-        printf("Aveage for Thress   %5.2f\n",avgscores[2]);
-        printf("Aveage for Fours    %5.2f\n",avgscores[3]);
-        printf("Aveage for Fives    %5.2f\n",avgscores[4]);
-        printf("Aveage for Sixes    %5.2f\n",avgscores[5]);
-        printf("Aveage for Chances  %5.2f\n",avgscores[11]);
+        printf("Average for Ones     %5.2f\n",avgscores[0]);
+        printf("Average for Twos     %5.2f\n",avgscores[1]);
+        printf("Average for Thress   %5.2f\n",avgscores[2]);
+        printf("Average for Fours    %5.2f\n",avgscores[3]);
+        printf("Average for Fives    %5.2f\n",avgscores[4]);
+        printf("Average for Sixes    %5.2f\n",avgscores[5]);
+        printf("Average for Chances  %5.2f\n",avgscores[11]);
         printf("Three of a kind Percentage  %5.2f\n",avgscores[6]);
         printf("Four of a kind Percentage   %5.2f\n",avgscores[7]);
         printf("Full House Percentage       %5.2f\n",avgscores[8]);
@@ -1256,7 +1410,7 @@ void statistics(const char *com[],int *AIcombinationArray, char *AIdices, int *A
                     cutcount++;
                 }
             } 
-            float cutpercentage = cutcount / loopnum * 100;
+            float cutpercentage = (cutcount / loopnum) * 100;
             cutoff[count] = scorecut;
             result[count] = cutcount;
             percentageresult[count] = cutpercentage;
@@ -1273,8 +1427,11 @@ void statistics(const char *com[],int *AIcombinationArray, char *AIdices, int *A
         int upper = 0;
         int lower = 0;
         float bonus = 0;
+        int bonusScore = 0;
         int total = 0;
         int sum = 0;
+        int finalforcurent = 0;
+        int totalFinal = 0;
         printf("Enter amount of loops: ");
         scanf("%d", &loop);
         float loopnum = loop;
@@ -1285,17 +1442,22 @@ void statistics(const char *com[],int *AIcombinationArray, char *AIdices, int *A
             sum = *AInScore + *AIoScore;
             total += sum;
             if(*AInScore > 63) {
-                    bonus++;
+                bonus++;
+                bonusScore = 35;
             }
+            finalforcurent = bonusScore + sum;
+            totalFinal += finalforcurent;
         }   
         float avgupper = upper / loopnum;
         float avglower = lower / loopnum;
         float avgtotal = total / loopnum;
         float avgbonus = bonus / loopnum;
-        float percentage = bonus / loopnum * 100;
+        float avgfinal = totalFinal / loopnum;
+        float percentage = (bonus / loopnum) * 100;
         printf("Total of upper scores is %7d, for %6.0f simulations. Average of upper score is  %7.2f\n", upper, loopnum, avgupper);
         printf("Total of lower scores is %7d, for %6.0f simulations. Average of lower score is  %7.2f\n", lower, loopnum, avglower);
         printf("Total of total scores is %7d, for %6.0f simulations. Average of total score is  %7.2f\n\n", total, loopnum, avgtotal);
+        printf("Total of Final scores is %7d, for %6.0f simulations. Average of Final score is  %7.2f\n\n", totalFinal, loopnum, avgfinal);
         printf("Number of bonuse's are  %4.0f,    Bonus Percentage is    %5.2f\n",bonus, percentage );
     }
     if (check == 0){//highscore lower score average.
@@ -1346,8 +1508,8 @@ void statRun( const char *com[], int *AIcombinationArray,  char *AIdices, int *A
     for (int i = 0; i < 13; i++) {
         printf("Round No %d\n",i+1);   
         printf(BOLD ITALIC"\tRoll NO (1) - "RESET);
-        printDice(AIdices, 0, 1, 1);
         diceReadings(AIdices); // intial roll of Ai's dices
+        printDice(AIdices, 0, 1, 1);
         AIIndex(AIdices, AIcombinationArray, &AIIndexNum, i); // this decides which index to choose according to the dice readings, aslo rooll the dices for much better dice readings.
         AIscoreForCombination(AIdices, AIIndexNum + 1, &AItempscore, AIName);
         if (AIIndexNum+1 < 7) {  //update the relevent scores for the human player.
@@ -1391,7 +1553,8 @@ int main() {
     players user;
     players AI;
 
-    /* play
+    /*
+    //play
     //instructions to play 
     instruct();
 
