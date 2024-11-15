@@ -25,16 +25,17 @@
 #include <string.h>
 #include <ctype.h>
 #include <unistd.h>
+#include <termios.h>
 
 // Normal text Colors
-#define BLACK "\033[30m"
-#define RED "\033[31m"
-#define GREEN "\033[32m"
-#define YELLOW "\033[33m"
-#define BLUE "\033[34m"
+#define BLACK   "\033[30m"
+#define RED     "\033[31m"
+#define GREEN   "\033[32m"
+#define YELLOW  "\033[33m"
+#define BLUE    "\033[34m"
 #define MAGENTA "\033[35m"
-#define CYAN "\033[36m"
-#define WHITE "\033[37m"
+#define CYAN    "\033[36m"
+#define WHITE   "\033[37m"
 
 // Text Styles 
 #define BOLD            "\033[1m"
@@ -270,12 +271,20 @@ void important() {
 }
 
 void next(){
-    //this function is specifically designed to take a user input to proceed to the next round.
-    // main target to get user input is to get the user's attention when displaying there scores for each round
-    printf(DIM"Proceed to the next round. Press anykey and enter."RESET);
+    //obatained from chat gpt this function's functionality is to pause the execution of the program until
+    // a key input is entered throught STDIN
+    printf(DIM BOLD BLINKING"Proceed to the next round. Press anykey : "RESET);
+    struct termios oldt, newt;
+    // Save old terminal settings
+    tcgetattr(STDIN_FILENO, &oldt);
+    newt = oldt;
+    // Set terminal to raw mode (disable echo and buffering)
+    newt.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+    // Wait for a single key press
     getchar();
-    clearInputs();
-    printf("\n");
+    // Restore old terminal settings
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
 }
 
 
@@ -640,9 +649,9 @@ void userIndex(int *dices, const char *com[], int *combinationArray, int *AIcomb
     //also the upper combination and lower combination totla will be diaplyed for the player as well as the ai
     printf(BOLD"┌───────────────────────────────────────┬───────────────────────────────────────┐\n" RESET);
     printf(BOLD "│" RESET);
-    printf(CYAN BOLD "   %-20.20s's Combinations " RESET,name);
+    printf(CYAN BOLD "   %20.20s's Combinations " RESET,name);
     printf(BOLD "│" RESET);
-    printf(MAGENTA BOLD "   %-20.20s's Combinations "RESET , AIname);
+    printf(MAGENTA BOLD "   %20.20s's Combinations "RESET , AIname);
     printf(BOLD "│" RESET);
     printf("\n");
     printf(BOLD"├───────────────────────────────────────┼───────────────────────────────────────┤\n" RESET);
@@ -924,7 +933,7 @@ void runningFun(int *dices, const char *com[], int *combinationArray, int *AIcom
         printf(DIM"──────────────────────────────────────────────────────────────────────────────────\n"RESET);
         diceReadings(AIdices); // intial roll of Ai's dices
         printf("\n\t");
-        printf(BOLD MAGENTA"%-20.20s's dice readings\n\n"RESET,AIName);
+        printf(BOLD MAGENTA"%20.20s's dice readings\n\n"RESET,AIName);
         timer(350);
         printf(BOLD ITALIC"\n\t\t      Roll NO 1 "RESET);
         timer(250);
