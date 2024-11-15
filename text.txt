@@ -1,7 +1,0 @@
-Cutoff Score is 350,	Cutoff Count is   0,	Cutoff Percentage is  0.00
-Cutoff Score is 300,	Cutoff Count is   0,	Cutoff Percentage is  0.00
-Cutoff Score is 250,	Cutoff Count is 226,	Cutoff Percentage is  9.04
-Cutoff Score is 200,	Cutoff Count is 1085,	Cutoff Percentage is 43.40
-Cutoff Score is 150,	Cutoff Count is 2218,	Cutoff Percentage is 88.72
-Cutoff Score is 100,	Cutoff Count is 2497,	Cutoff Percentage is 99.88
-Cutoff Score is  50,	Cutoff Count is 2500,	Cutoff Percentage is 100.00
