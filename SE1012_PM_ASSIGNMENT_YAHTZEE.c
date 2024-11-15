@@ -26,7 +26,7 @@
 #include <ctype.h>
 #include <unistd.h>
 
-// Normal Text Colors
+// Normal text Colors
 #define BLACK "\033[30m"
 #define RED "\033[31m"
 #define GREEN "\033[32m"
