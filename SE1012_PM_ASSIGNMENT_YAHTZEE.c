@@ -37,13 +37,13 @@
 #define WHITE "\033[37m"
 
 // Text Styles 
-#define BOLD           "\033[1m"
-#define DIM            "\033[2m"
-#define ITALIC         "\033[3m"
-#define UNDERLINED     "\033[4m"
-#define BLINKING       "\033[5m"
+#define BOLD            "\033[1m"
+#define DIM             "\033[2m"
+#define ITALIC          "\033[3m"
+#define UNDERLINED      "\033[4m"
+#define BLINKING        "\033[5m"
 #define HIGH_SCORE_TEXT "\033[1m\033[30m"  
-#define HIGH_SCORE_BG "\033[46m" 
+#define HIGH_SCORE_BG   "\033[46m" 
 
 // Reset Code
 #define RESET "\033[0m"
