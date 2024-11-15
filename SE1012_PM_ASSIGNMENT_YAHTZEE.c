@@ -1663,33 +1663,36 @@ void AIComb(const char *com[],int *AIcombinationArray, char *AIname, int*AIScore
 int main() {
     srand(time(0));// only call once. this will generate random numbers compared to the time in seconds. this will remove the squential random number ger=neration.
 
+    char input;
+
     //defining the structures
     players user;
     players AI;
 
-    
-    //play
-    //instructions to play 
-    instruct();
+    instruct();//instructions to play
+    playerName(user.name);// input the name of the player
+    AIName(AI.name);// input the name of the AI
+    important();//important information how the games should be played
 
-    // input the names of the players
-    playerName(user.name);
-    AIName(AI.name);
-
-    //important information how the games should be played
-    important();
+    do {//loop that plays the game
+        runningFun(user.dice, combinationNames, user.combinations, AI.combinations, &user.index, &user.uScore, &user.lScore, AI.dice, &AI.uScore, &AI.lScore, user.name, AI.name, user.scoredScore, AI.scoredScore);
+        scoreDisplay(user.name, user.uScore, user.lScore, &user.total, 0);//display player's final Score
+        scoreDisplay(AI.name, AI.uScore, AI.lScore, &AI.total, 1);//display AI's final Score
+        winner(user.total, AI.total, user.name, AI.name);//choosing the winner
+        printf("Do you want to play again?\n\tPress 'Y' to play again,\n\tPress 'N' to stop playing.\t");
+        input = getchar();
+        clearInputs();
+        while (1) {
+            if ((input == 'Y') || (input == 'N') || (input == 'y') || (input == 'n')) {
+                break;
+            } else {
+                printf(RED"Invalid input either enter 'Y' or 'N' : "RESET);
+                input = getchar();
+                clearInputs();
+            }
+        }
+    } while ((input == 'Y') || (input == 'y'));
     
-    //running Function
-    runningFun(user.dice, combinationNames, user.combinations, AI.combinations, &user.index, &user.uScore, &user.lScore, AI.dice, &AI.uScore, &AI.lScore, user.name, AI.name, user.scoredScore, AI.scoredScore);
-    
-    //display final Score
-    scoreDisplay(user.name, user.uScore, user.lScore, &user.total, 0);
-    scoreDisplay(AI.name, AI.uScore, AI.lScore, &AI.total, 1);
-
-    //choosing the winner
-    winner(user.total, AI.total, user.name, AI.name);
-    
-
     //statistics
     //statistics(combinationNames, AI.combinations,  AI.dice, &AI.uScore, &AI.lScore, AI.scoredScore);
   
