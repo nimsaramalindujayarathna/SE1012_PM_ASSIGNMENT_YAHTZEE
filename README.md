@@ -22,9 +22,9 @@ This project is a C program that simulates the classic dice game, Yahtzee. It al
 1.  **Compilation:**
     Compile the C source code using a C compiler (like GCC):
     ```bash
-    gcc your_yahtzee_file.c -o yahtzee
+    gcc SE1012_PM_ASSIGNMENT_YAHTZEE.c -o yahtzee
     ```
-     (Replace `your_yahtzee_file.c` with the actual name of your file.)
+    
 
 2.  **Execution:**
     Run the compiled program:
@@ -100,8 +100,8 @@ Here are the available Yahtzee scoring combinations:
 
 ## Author
 
-[Your Name] - [Your Email or GitHub profile]
+Nimsara Jayarathna - https://github.com/nimsaramalindujayarathna
 
 ## Date
 
-[Date of last commit]
+01.02.2025
